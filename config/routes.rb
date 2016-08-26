@@ -4,10 +4,12 @@ Rails.application.routes.draw do
 
   root 'welcome#index'
 
-  namespace :api, defaults: {format: 'json'} do
-    namespace :v1 do
-      resources :charges, only: [:create]
-      resources :cards, only: [:show, :update]
+  constraints subdomain: /(api-sas|api|)/ do
+    namespace :api, defaults: {format: 'json'} do
+      namespace :v1 do
+        resources :charges, only: [:create]
+        resources :cards, only: [:show, :update]
+      end
     end
   end
 

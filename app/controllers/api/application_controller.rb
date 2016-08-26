@@ -27,7 +27,7 @@ module Api
                         trace: exception.backtrace[0,10].join("\n"),
                         parameter: params.inspect.to_json)
 
-      logger.warn "#{self.class.name}.create : #{e.class.name}"
+      logger.warn "#{self.class.name}.create : #{exception.class.name}"
 
       message = exception.class.name.match('ActiveRecord::RecordInvalid') ?
           exception.record.errors.to_json : exception.message
