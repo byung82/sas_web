@@ -9,7 +9,7 @@ module Api
 
         attr_accessor :business_no, :card_no, :amt
 
-        validates_presence_of :business_no, :card_no, :amt,
+        validates_presence_of :business_no, :card_no, :amt
 
         validate :check_business_no, :check_card_no
 
