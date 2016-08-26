@@ -9,9 +9,9 @@ module Api
 
         attr_accessor :business_no, :card_no, :phone_no
 
-        validates_presence_of :business_no, :card_no, :phone_no
+        validates_presence_of :business_no, :card_no, :phone_no, :user_seq
 
-        validate :check_business_no, :check_card_no
+        validate :check_business_no, :check_card_no, :user_seq
 
         def initialize(attributes = {})
           attributes.each do |name, value|
@@ -33,11 +33,11 @@ module Api
 
           items = params[:id].split(/,/)
 
-          item = Card.new
+          item = UpdateCard.new
           item.business_no = items[0]
           item.card_no = items[1]
           item.phone_no = params[:phone_no]
-
+          item.user_seq = params[:user_seq]
           item
         end
       end

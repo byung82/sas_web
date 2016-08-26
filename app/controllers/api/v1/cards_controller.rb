@@ -42,7 +42,7 @@ module Api
 
         StoreCard.transaction do
           @item.phone_no = item.phone_no
-
+          @item.user_seq = item.user_seq
           @item.save
         end
 
