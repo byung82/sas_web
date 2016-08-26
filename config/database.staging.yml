@@ -2,7 +2,7 @@ default: &default
   adapter: oracle_enhanced
   username: sas
 
-production:
+development:
   <<: *default
   adapter: oracle_enhanced
   database: //sas-dev-01.db.kminlove.com:1521/sas_dev.db.kminlove.com
