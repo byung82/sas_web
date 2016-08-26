@@ -87,6 +87,6 @@ set :nginx_sites_enabled_path, '/etc/nginx/sites-enabled'
 # set :puma_init_active_record, false
 # set :puma_preload_app, true
 
-set :systemd_unit, -> { "#{fetch :application}.service" }
+set :systemd_unit, -> { "#{fetch :application}.target" }
 set :systemd_use_sudo, true
 set :systemd_roles, %w(app)

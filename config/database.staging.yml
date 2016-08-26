@@ -1,10 +1,16 @@
 default: &default
   adapter: oracle_enhanced
   username: sas
+  password: Sas002918
 
 development:
   <<: *default
   adapter: oracle_enhanced
   database: //sas-dev-01.db.kminlove.com:1521/sas_dev.db.kminlove.com
 #  password: <%= ENV["MGM_WEB_DATABASE_PASSWORD"] %>
-  password: Sas002918
+
+production:
+  <<: *default
+  adapter: oracle_enhanced
+  database: //sas-dev-01.db.kminlove.com:1521/sas_dev.db.kminlove.com
+#  password: <%= ENV["MGM_WEB_DATABASE_PASSWORD"] %>
