@@ -28,7 +28,7 @@ set :deploy_to, "/srv/apps/kminlove/#{fetch(:application)}"
 before 'deploy:check:linked_files', 'config:push'
 
 # Default value for :linked_files is []
-set :linked_files, fetch(:linked_files, []).push('config/secrets.yml', 'config/database.yml')
+set :linked_files, fetch(:linked_files, []).push('config/secrets.yml', 'config/database.yml', '.env')
 # set :linked_files, fetch(:linked_files, []).push('config/database.yml', 'config/secrets.yml')
 
 # Default value for linked_dirs is []

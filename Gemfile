@@ -46,6 +46,8 @@ gem 'eventmachine'
 
 gem 'oauth2'
 
+gem 'foreman'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
@@ -53,6 +55,7 @@ group :development, :test do
   gem 'capistrano-bundler', '~> 1.1.2'
   gem 'capistrano3-nginx', '~> 2.0'
   gem 'capistrano-upload-config'
+  gem 'capistrano-foreman'
   gem 'capistrano-systemd'
 end
 
