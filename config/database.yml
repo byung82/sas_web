@@ -16,10 +16,17 @@
 #  prefetch_rows: 100
 #  cursor_sharing: similar
 #
-default:
-# Warning: The database defined as "test" will be erased and
-# re-generated from your development database when you run "rake".
-# Do not set this db to the same as development or production.
+default: &default
+  adapter: oracle_enhanced
+  username: sas
+  password: Sas002918
+
+development:
+  <<: *default
+  adapter: oracle_enhanced
+  database: //sas-dev-01.db.kminlove.com:1521/sas_dev.db.kminlove.com
+#  password: <%= ENV["MGM_WEB_DATABASE_PASSWORD"] %>
+
 test:
   <<: *default
   database: //sas-dev-01.db.kminlove.com:1521/sas_test.db.kminlove.com
