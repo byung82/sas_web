@@ -8,10 +8,9 @@ class ApiChangesControllerTest < ActionDispatch::IntegrationTest
 
     app = Doorkeeper::Application.new :name => 'test', :redirect_uri => 'http://test.com'
 
-    app.owner = user
+    # app.owner = user
 
     app.save
-
 
     client = OAuth2::Client.new(app.uid, app.secret) do |b|
       b.request :url_encoded
