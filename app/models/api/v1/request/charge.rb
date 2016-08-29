@@ -25,7 +25,7 @@ module Api
         end
 
         def check_card_no
-          errors.add(:card_no, '카드반호가 존재하지 않습니다') if Store.where(card_no: self.card_no).count <= 0
+          errors.add(:card_no, '카드반호가 존재하지 않습니다') if StoreCard.where(card_no: self.card_no).count <= 0
         end
 
       end
