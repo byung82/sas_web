@@ -25,7 +25,7 @@ module Api
 
       ErrorTrack.create(message: exception.message,
                         trace: exception.backtrace[0,10].join("\n"),
-                        parameter: params.inspect.to_json)
+                        parameter: params.inspect)
 
       logger.warn "#{self.class.name}.create : #{exception.class.name}"
 
