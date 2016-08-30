@@ -46,6 +46,8 @@ gem 'ruby-plsql'
 
 gem 'eventmachine'
 
+gem 'em-hiredis'
+
 gem 'oauth2'
 
 gem 'foreman'

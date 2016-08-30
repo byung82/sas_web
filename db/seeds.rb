@@ -8,18 +8,31 @@
 
 
 
-begin
-  client = OAuth2::Client.new('749c0bff0ed3615d3befc043311e24a16646f4e656ddd5eb6fb6106741f57a24', '2336bd69779e6d6dda16a99eed81f4f5e16b8560311fcc1dde52b03f753cd189', :site => 'http://localhost:3006')
+start_no = 7000000000000001
+end_no = start_no + (250 *4)
 
-  token = client.password.get_token('humoney', '11111111', params: {grant_type: 'password'})
 
-  response = token.post('/api/v1/charges', params:{business_no: '6818100394', card_no: '9410852258688700', amt: 1000} )
 
-  p response.parsed
-rescue => e
-  p e
-  p e.response.body
+(start_no..end_no).each do |card_no|
+  plsql.store_card_pkg.insert_store_card('TEST000001', card_no.to_s)
+
+  p card_no
 end
+
+
+
+# begin
+#   client = OAuth2::Client.new('749c0bff0ed3615d3befc043311e24a16646f4e656ddd5eb6fb6106741f57a24', '2336bd69779e6d6dda16a99eed81f4f5e16b8560311fcc1dde52b03f753cd189', :site => 'http://localhost:3006')
+#
+#   token = client.password.get_token('humoney', '11111111', params: {grant_type: 'password'})
+#
+#   response = token.post('/api/v1/charges', params:{business_no: '6818100394', card_no: '9410852258688700', amt: 1000} )
+#
+#   p response.parsed
+# rescue => e
+#   p e
+#   p e.response.body
+# end
 #
 # client = OAuth2::Client.new('', '', site: 'https://speed-pay.co.kr')
 #

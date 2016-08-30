@@ -9,11 +9,18 @@ module Sas
 
 
       cb = Proc.new do |data|
-        process_message(data)
+        #process_message(data)
+
+        p data
+
         @queue.pop &cb
       end
 
       @queue.pop &cb
+
+      (1..100).each do |item|
+
+      end
 
     end
 
