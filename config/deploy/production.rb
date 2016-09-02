@@ -7,7 +7,7 @@ server '211.110.141.200', user: 'deployer', roles: %w{app db web}, my_property: 
 # server 'example.com', user: 'deploy', roles: %w{app web}, other_property: :other_value
 # server 'db.example.com', user: 'deploy', roles: %w{db}
 
-
+set :application, 'sas_web_prod'
 
 # role-based syntax
 # ==================

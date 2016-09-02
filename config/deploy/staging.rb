@@ -9,6 +9,8 @@ server '211.110.141.201', user: 'deployer', roles: %w{app db web}, my_property: 
 
 set :rails_env, 'production'
 
+set :application, 'sas_web'
+
 # role-based syntax
 # ==================
 
