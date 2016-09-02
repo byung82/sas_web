@@ -13,7 +13,7 @@ module Api
 
       def show
 
-        item = Api::V1::Request::Card.create params
+        item = Api::V1::Request::Card.create(params, false)
 
         raise ActiveRecord::RecordInvalid, item if !item.valid?
 
@@ -27,10 +27,7 @@ module Api
         }
 
       rescue => e
-
         process_exception(e)
-
-
       end
 
       def update

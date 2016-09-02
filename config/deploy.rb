@@ -1,6 +1,6 @@
 # config valid only for current version of Capistrano
 lock '3.6.1'
-set :application, 'sas_web_prod'
+set :application, 'sas_web'
 
 set :repo_url, 'git@github.com:byung82/sas_web.git'
 
