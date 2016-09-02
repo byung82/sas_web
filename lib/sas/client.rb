@@ -1,11 +1,11 @@
+
 module Sas
 
   class Client < EventMachine::Connection
 
     def initialize
-      p "init"
 
-      @queue = {}
+      @queue = Hash.new
 
 
       # (1..10).each do |item|
@@ -30,10 +30,16 @@ module Sas
       #
       pubsub.on(:message) do |channel, message|
 
-        p "#{channel}, #{@queue[message.to_i].class.name}"
+        p "#{channel}, #{message}"
 
         if channel == 'SAS.SEND'
-          limit = @queue[message.to_i]
+          message = JSON.parse(message, symbolize_names: true)
+
+          queue = @queue[message[:business_no]]
+          limit = queue[message[:page_no].to_i]
+          # p limit.items.to_json
+          # ttt = JSON.parse(aaa)
+
           send_data limit.to_binary_s
         end
       end
@@ -41,11 +47,11 @@ module Sas
     end
 
     def unbind
-      Rails.logger.debug '새로운접속 해제'
+      Rails.logger.debug '접속해제'
+      EventMachine.stop
     end
 
     def post_init
-      p "------------"
       Rails.logger.debug '새로운접속'
 
       # p "connect"
@@ -86,7 +92,10 @@ WHERE A.CARD_NO = B.CARD_NO(+)
 AND A.BUSINESS_NO = '#{business_no['business_no']}'
         SQL
 
+        queue = Array.new
+
         items = LimitRequest.connection.select_all(sql)
+
 
         max_page = (items.count.to_f / 250).ceil
 
@@ -107,8 +116,8 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
           limit.bzr_no = business_no['business_no']
 
           limit.dlng_dv_c = 'U'
-          limit.crtl_pge_no = max_page.to_s.rjust(3,'0')
-          limit.wo_pge_n = page_no.to_s.rjust(3,'0')
+          limit.wo_pge_n = max_page.to_s.rjust(3,'0')
+          limit.crtl_pge_no = page_no.to_s.rjust(3,'0')
 
           requests.each_with_index do |item, index|
             limit.items[index].card_no = item['card_no'].to_s.rjust(16, ' ')
@@ -117,38 +126,70 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
 
           (requests.count..249).each  do |index|
             limit.items[index].card_no = ''.to_s.rjust(16, ' ')
-            limit.items[index].lim_am = 0.to_s.ljust(13, ' ')
+            limit.items[index].lim_am = 0.to_s.rjust(13, ' ')
           end
 
           len = limit.to_binary_s.length
 
           limit.hdr_c = (len-4).to_s.rjust(4, '0')
 
-          @queue[page_no] = limit
+          Rails.logger.debug "PAGE_NO: #{page_no}, #{business_no}"
+
+          queue.push limit
 
           page_no = page_no + 1
+
 
 
         end
 
 
+        p "PAGE_NO : #{page_no}, #{queue.length}"
+
+        queue.each do |item|
+          p item.crtl_pge_no
+        end
+        # p queue[0].crtl_pge_no
+        # p queue[1].crtl_pge_no
+
+        # p queue
+
+        @queue[business_no['business_no']] = queue
+
+
+        @queue[business_no['business_no']].each do |limit|
+          # p items.to_json
+
+          # p "KEY : #{key}"
+          # p aa
+          cards = []
+
+          limit.items.each do |cc|
+            card = { :card_no => cc.card_no.to_s, amt: cc.lim_am.to_i }
+            cards << card
+          end
+
+
+          LimitLog.create(
+              type_cd: 'P001',
+              hdr_c: limit.hdr_c,
+              tsk_dv_c: limit.tsk_dv_c,
+              etxt_snrc_sn: limit.etxt_snrc_sn,
+              trs_dt: limit.trs_dt,
+              trs_t: limit.trs_t,
+              rsp_c: limit.rsp_c,
+              bzr_no: limit.bzr_no,
+              dlng_dv_c: "#{limit.dlng_dv_c}000",
+              crtl_pge_no: limit.crtl_pge_no,
+              wo_pge_n: limit.wo_pge_n,
+              card: cards.to_json
+          )
+        end
+
         EM.add_timer(2) {
-          p @queue[1].class.name
-          @redis.publish('SAS.SEND', 1)
+          @redis.publish('SAS.SEND', {business_no: business_no['business_no'], page_no: 0}.to_json)
         }
-
-
       end
-
-      # @items = LimitRequest.where(send_yn: false)
-
-
-
-
-
-
-
-      # $redis.publish('SAS.MESSAGE', {item: 1111}.to_json)
     end
 
     def receive_data(data)
@@ -206,13 +247,81 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
 
       limit = Packet::Limit.read(buffer)
 
-      Rails.logger.debug "process_message : #{limit}"
+      p "process_message : #{limit.bzr_no}, #{limit.crtl_pge_no}, #{limit.wo_pge_n}"
 
-      page_no = limit.page_no
+      page_no = limit.crtl_pge_no.to_s.to_i
+
+      cards = []
+
+      limit.items.each do |cc|
+        aa = { :card_no => cc.card_no.to_s, amt: cc.lim_am.to_i }
+        cards << aa
+      end
+
+      log = LimitLog.create(
+          type_cd: 'P002',
+          hdr_c: limit.hdr_c,
+          tsk_dv_c: limit.tsk_dv_c,
+          etxt_snrc_sn: limit.etxt_snrc_sn,
+          trs_dt: limit.trs_dt,
+          trs_t: limit.trs_t,
+          rsp_c: limit.rsp_c,
+          bzr_no: limit.bzr_no,
+          dlng_dv_c: limit.dlng_dv_c,
+          crtl_pge_no: limit.crtl_pge_no,
+          wo_pge_n: limit.wo_pge_n,
+          card: cards.to_json
+      )
+
+      # @queue[limit.bzr_no].delete_at page_no-1
 
 
+      limit.items.each do |item|
+        request = LimitRequest.find_by(card_no: item.card_no.to_s)
+
+        if !request.present?
+          next
+        end
+
+        request.send_yn = true
+        request.limit_log_id = log.id
+        request.error_yn = limit.rsp_c != '0000' && limit.rsp_c != '0001'
+        request.code = limit.rsp_c
+
+        request.save
 
 
+      end
+
+      # p @queue[limit.bzr_no]
+
+      # item = @queue[limit.bzr_no][page_no + 1]
+      #
+      # p item
+
+      limit_check = @queue[limit.bzr_no][page_no]
+      p "#{limit.bzr_no}, #{limit.rsp_c}, #{limit_check.crtl_pge_no}, #{page_no}, #{@queue[limit.bzr_no].length}" if limit_check != nil
+
+      if limit_check != nil
+        header = { :business_no => limit.bzr_no.to_s, page_no: page_no.to_i }
+
+        Rails.logger.debug "SAS.SEND : #{header}"
+
+        # send_header = {business_no: limit.bzr_no, page_no: page_no + 1}
+        @redis.publish('SAS.SEND', header.to_json)
+      else
+
+        @queue.delete limit.bzr_no
+
+        Rails.logger.debug "QUEUE DELETE #{limit.bzr_no}, #{@queue.length}"
+
+
+        if @queue.length == 0
+
+          Rails.logger.debug '전송완료'
+          close_connection_after_writing
+        end
+      end
 
 
       # close_connection_after_writing
@@ -224,7 +333,7 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
 
       $stdout.sync = true
 
-      Rails.logger = Logger.new("#{Rails.root}/log/server_#{Rails.env}.log")
+      Rails.logger = Logger.new("#{Rails.root}/log/client_#{Rails.env}.log")
 
 
       EventMachine::run {
@@ -238,7 +347,7 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
         # end
 
 
-        EventMachine::connect 'sas-card', 8888, Client
+        EventMachine::connect '127.0.0.1', 19703, Client
       }
     end
   end

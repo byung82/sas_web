@@ -29,7 +29,7 @@ module Api
 
       logger.warn "#{self.class.name}.create : #{exception.class.name}"
 
-      message = exception.class.name.match('ActiveRecord::RecordInvalid') ?
+      message = exception.class.name.match('ActiveRecord::RecordInvalid').present? ?
           exception.record.errors.to_json : exception.message
 
       render json: {
