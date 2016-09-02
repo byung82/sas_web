@@ -7,7 +7,7 @@ module Api
         include ActionView::Helpers::NumberHelper
         extend ActiveModel::Naming
 
-        attr_accessor :business_no, :card_no, :phone_no
+        attr_accessor :business_no, :card_no, :phone_no, :user_seq
 
         validates_presence_of :business_no, :card_no, :phone_no, :user_seq
 
