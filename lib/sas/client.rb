@@ -204,9 +204,16 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
 
     def process_message(buffer)
 
-      limit = Limit.read(buffer)
+      limit = Packet::Limit.read(buffer)
 
       Rails.logger.debug "process_message : #{limit}"
+
+      page_no = limit.page_no
+
+
+
+
+
 
       # close_connection_after_writing
     end
