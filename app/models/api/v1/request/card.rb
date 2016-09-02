@@ -28,7 +28,7 @@ module Api
           errors.add(:card_no, '카드번호가 존재하지 않습니다') if StoreCard.where(card_no: self.card_no).count <= 0
         end
 
-        def self.create(params)
+        def self.create(params, require_phone_no = true)
 
           items = params[:id].split(/,/)
 
@@ -36,6 +36,7 @@ module Api
           item.business_no = items[0]
           item.card_no = items[1]
 
+          item.phone_no = '123456' if !require_phone_no
           item
         end
       end
