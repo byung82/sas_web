@@ -30,8 +30,6 @@ create or replace PACKAGE LOG_PKG AS
                             I_MRC_ADR IN VARCHAR2,
                             I_MRC_DTL_ADR IN VARCHAR2,
                             I_PPRN2 IN VARCHAR2,
-                            I_CREATED_AT IN DATE,
-                            I_UPDATED_AT IN DATE,
                             O_ID OUT NUMBER);
 
 END LOG_PKG;
@@ -67,8 +65,6 @@ create or replace PACKAGE BODY LOG_PKG AS
                             I_MRC_ADR IN VARCHAR2,
                             I_MRC_DTL_ADR IN VARCHAR2,
                             I_PPRN2 IN VARCHAR2,
-                            I_CREATED_AT IN DATE,
-                            I_UPDATED_AT IN DATE,
                             O_ID OUT NUMBER) AS
     V_YMD           VARCHAR2(6);
     V_SEQ           NUMBER(38);
@@ -95,17 +91,19 @@ create or replace PACKAGE BODY LOG_PKG AS
         V_SEQ := 1;
     END;
 
-    SELECT
-      *
-    INTO V_STORE
-    FROM STORES
-    WHERE BUSINESS_NO = I_BZR_NO;
 
     SELECT
       *
     INTO V_STORE_CARD
     FROM STORE_CARDS
     WHERE CARD_NO = I_CARD_NO;
+
+    SELECT
+      *
+    INTO V_STORE
+    FROM STORES
+    WHERE ID = V_STORE_CARD.STORE_ID;
+
 
 
     V_ID := TO_NUMBER(V_YMD||TO_CHAR(V_SEQ,'FM0000000000'));
@@ -175,8 +173,8 @@ create or replace PACKAGE BODY LOG_PKG AS
       I_MRC_ADR,
       I_MRC_DTL_ADR,
       I_PPRN2,
-      I_CREATED_AT,
-      I_UPDATED_AT
+      SYSDATE - 9/24,
+      SYSDATE - 9/24
     );
 
     O_ID := V_ID;
@@ -190,8 +188,8 @@ create or replace PACKAGE BODY LOG_PKG AS
       WHERE ID = V_ID
     ) ST
     ON (
-      TT.YMD=ST.YMD
-      AND TT.BUSINESS_NO = ST.BZR_NO
+      TT.YMD=V_YMD
+      AND TT.BUSINESS_NO = V_STORE.BUSINESS_NO
       AND TT.CARD_NO = ST.CARD_NO
     )
     WHEN MATCHED THEN -- UPDATE
@@ -226,7 +224,7 @@ create or replace PACKAGE BODY LOG_PKG AS
             /*+ INDEX_DESC(STORE_LIMIT_MSTS STORE_LIMIT_MSTS_PK) */
             TO_NUMBER(ST.YMD||TO_CHAR(NVL(MAX(SEQ), 0) + ST.RN,'FM0000000000'))
           FROM STORE_LIMIT_MSTS
-          WHERE YMD = ST.YMD
+          WHERE YMD = V_YMD
           AND ROWNUM = 1
         ),
         ST.YMD,
@@ -235,10 +233,10 @@ create or replace PACKAGE BODY LOG_PKG AS
             /*+ INDEX_DESC(STORE_LIMIT_MSTS STORE_LIMIT_MSTS_PK) */
             NVL(MAX(SEQ), 0) + ST.RN
           FROM STORE_LIMIT_MSTS
-          WHERE YMD = ST.YMD
+          WHERE YMD = V_YMD
           AND ROWNUM = 1
         ),
-        I_BZR_NO,
+        V_STORE.BUSINESS_NO,
         V_STORE.ID,
         V_STORE_CARD.ID,
         I_CARD_NO,
@@ -271,23 +269,27 @@ create or replace PACKAGE BODY LOG_PKG AS
         UPDATED_AT
       )
       SELECT
-        (
-          SELECT
-            /*+ INDEX_DESC(STORE_LIMIT_DETS STORE_LIMIT_DETS_PK) */
-            TO_NUMBER(V_YMD||TO_CHAR(NVL(MAX(SEQ), 0) + ROWNUM(),'FM0000000000'))
-          FROM STORE_LIMIT_DETS
-          WHERE YMD = V_YMD
-          AND ROWNUM = 1
-        ),
+        TO_NUMBER(
+          V_YMD||
+          TO_CHAR(
+          (
+            SELECT
+              /*+ INDEX_DESC(STORE_LIMIT_DETS STORE_LIMIT_DETS_PK) */
+              NVL(MAX(SEQ), 0)
+            FROM STORE_LIMIT_DETS
+            WHERE YMD = V_YMD
+            AND ROWNUM = 1
+          ) + ROWNUM(), 'FM0000000000')
+        ) AS ID,
         V_YMD,
         (
-          SELECT
-            /*+ INDEX_DESC(STORE_LIMIT_DETS STORE_LIMIT_DETS_PK) */
-            NVL(MAX(SEQ), 0) + ROWNUM()
-          FROM STORE_LIMIT_DETS
-          WHERE YMD = V_YMD
-          AND ROWNUM = 1
-        ),
+            SELECT
+              /*+ INDEX_DESC(STORE_LIMIT_DETS STORE_LIMIT_DETS_PK) */
+              NVL(MAX(SEQ), 0)
+            FROM STORE_LIMIT_DETS
+            WHERE YMD = V_YMD
+            AND ROWNUM = 1
+        ) + ROWNUM(),
         a.BUSINESS_NO,
         V_STORE_CARD.USER_SEQ,
         V_ID,
@@ -297,7 +299,7 @@ create or replace PACKAGE BODY LOG_PKG AS
         V_STORE_CARD.ID,
         V_STORE_CARD.CARD_NO,
         DECODE(I_APR_CAN_YN, 'Y', 'LS003', 'N', 'LS002'),
-        V_AMT,
+        DECODE(I_APR_CAN_YN, 'Y', V_AMT, 'N', V_AMT * -1),
         V_STORE_CARD.LIMIT_AMT,
         SYSDATE - 9/24,
         SYSDATE - 9/24
@@ -305,9 +307,10 @@ create or replace PACKAGE BODY LOG_PKG AS
       WHERE ST_KEY = V_ST_KEY;
 
 
+
       UPDATE STORE_CARDS
       SET LIMIT_AMT = LIMIT_AMT + DECODE(I_APR_CAN_YN, 'Y', V_AMT, 'N', V_AMT * -1)
-      WHERE ID = STORE_CARDS.ID;
+      WHERE CARD_NO = V_STORE_CARD.CARD_NO;
 
   END INSERT_APPROVAL;
 
