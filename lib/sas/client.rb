@@ -200,6 +200,9 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
       @buffer << fragment
       @current_size += fragment.length
 
+      p "CURRENT_SIZE: #{@current_size}"
+
+
       if @current_size == @data_size
         begin
           process_message(@buffer.join)
@@ -236,6 +239,7 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
     def process_message(buffer)
 
       limit = Packet::Limit.read(buffer)
+
 
       Rails.logger.debug "process_message : #{limit.bzr_no}, #{limit.crtl_pge_no}, #{limit.wo_pge_n}"
 
