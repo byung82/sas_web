@@ -97,11 +97,10 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
 
         items = LimitRequest.connection.select_all(sql)
 
-
         max_page = (items.count.to_f / 250).ceil
 
-
         page_no = 1
+
 
         items.each_slice(250) do |requests|
 
@@ -144,40 +143,42 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
 
         end
 
-        @queue[business_no['business_no']] = queue
+        if items.count > 0
+          @queue[business_no['business_no']] = queue
 
-        @queue[business_no['business_no']].each do |limit|
-          # p items.to_json
+          @queue[business_no['business_no']].each do |limit|
+            # p items.to_json
 
-          # p "KEY : #{key}"
-          # p aa
-          cards = []
+            # p "KEY : #{key}"
+            # p aa
+            cards = []
 
-          limit.items.each do |cc|
-            card = { :card_no => cc.card_no.to_s, amt: cc.lim_am.to_i }
-            cards << card
+            limit.items.each do |cc|
+              card = { :card_no => cc.card_no.to_s, amt: cc.lim_am.to_i }
+              cards << card
+            end
+
+
+            LimitLog.create(
+                type_cd: 'P001',
+                hdr_c: limit.hdr_c,
+                tsk_dv_c: limit.tsk_dv_c,
+                etxt_snrc_sn: limit.etxt_snrc_sn,
+                trs_dt: limit.trs_dt,
+                trs_t: limit.trs_t,
+                rsp_c: limit.rsp_c,
+                bzr_no: limit.bzr_no,
+                dlng_dv_c: "#{limit.dlng_dv_c}000",
+                crtl_pge_no: limit.crtl_pge_no,
+                wo_pge_n: limit.wo_pge_n,
+                card: cards.to_json
+            )
           end
 
-
-          LimitLog.create(
-              type_cd: 'P001',
-              hdr_c: limit.hdr_c,
-              tsk_dv_c: limit.tsk_dv_c,
-              etxt_snrc_sn: limit.etxt_snrc_sn,
-              trs_dt: limit.trs_dt,
-              trs_t: limit.trs_t,
-              rsp_c: limit.rsp_c,
-              bzr_no: limit.bzr_no,
-              dlng_dv_c: "#{limit.dlng_dv_c}000",
-              crtl_pge_no: limit.crtl_pge_no,
-              wo_pge_n: limit.wo_pge_n,
-              card: cards.to_json
-          )
+          EM.add_timer(2) {
+            @redis.publish('SAS.SEND', {business_no: business_no['business_no'], page_no: 0}.to_json)
+          }
         end
-
-        EM.add_timer(2) {
-          @redis.publish('SAS.SEND', {business_no: business_no['business_no'], page_no: 0}.to_json)
-        }
       end
     end
 
@@ -236,7 +237,7 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
 
       limit = Packet::Limit.read(buffer)
 
-      p "process_message : #{limit.bzr_no}, #{limit.crtl_pge_no}, #{limit.wo_pge_n}"
+      Rails.logger.debug "process_message : #{limit.bzr_no}, #{limit.crtl_pge_no}, #{limit.wo_pge_n}"
 
       page_no = limit.crtl_pge_no.to_s.to_i
 
