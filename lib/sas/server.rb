@@ -9,19 +9,12 @@ module Sas
 
 
       cb = Proc.new do |data|
-        #process_message(data)
-
-        p data
+        process_message(data)
 
         @queue.pop &cb
       end
 
       @queue.pop &cb
-
-      (1..100).each do |item|
-
-      end
-
     end
 
     def process_message(data)
@@ -29,8 +22,6 @@ module Sas
 
       approval = data[:approval]
 
-
-      p "approval.apr_can_yn : #{approval.apr_can_yn}"
       ApprovalLog.transaction do
         ApprovalLog.create!(
             type_cd: 'P002',
@@ -59,6 +50,15 @@ module Sas
             mrc_dtl_adr: approval.mrc_dtl_adr,
             pprn2: approval.pprn2)
       end
+
+      if approval.apr_can_yn == 'N'
+        approval.tsk_dv_c = '1100'
+      else
+        approval.tsk_dv_c = '2100'
+      end
+
+      approval.rsp_c = '0000'
+      data[:client].send_data approval.to_binary_s
     rescue => e
       Rails.logger.warn "메세지큐 처리 오류 : #{e}"
       data[:client].close_connection_after_writing
@@ -182,7 +182,7 @@ module Sas
       elsif header.tsk_dv_c == '2001'
         Rails.logger.info '취소'
         item = Sas::Packet::Approval.read(buffer)
-        server.push({client: self, approval: item})
+        server.queue.push({client: self, approval: item})
       else
         Rails.logger.info "패킷헤더 오류 : #{header}"
         close_connection_after_writing

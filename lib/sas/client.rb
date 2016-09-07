@@ -70,13 +70,14 @@ FROM
 (
   SELECT
     ID,
+    BUSINESS_NO,
     ROW_NUMBER() OVER (PARTITION BY BUSINESS_NO ORDER BY BUSINESS_NO) ORDER_NO
   FROM limit_requests
   WHERE SEND_YN = 'N'
 ) a,
-limit_requests b
-WHERE a.ORDER_NO = 1
-AND a.ID = b.ID
+STORES b
+WHERE 1 = a.ORDER_NO(+)
+AND b.BUSINESS_NO = a.BUSINESS_NO(+)
       SQL
 
 
@@ -143,19 +144,7 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
 
         end
 
-
-        p "PAGE_NO : #{page_no}, #{queue.length}"
-
-        queue.each do |item|
-          p item.crtl_pge_no
-        end
-        # p queue[0].crtl_pge_no
-        # p queue[1].crtl_pge_no
-
-        # p queue
-
         @queue[business_no['business_no']] = queue
-
 
         @queue[business_no['business_no']].each do |limit|
           # p items.to_json
@@ -289,8 +278,6 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
         request.code = limit.rsp_c
 
         request.save
-
-
       end
 
       # p @queue[limit.bzr_no]
@@ -300,7 +287,7 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
       # p item
 
       limit_check = @queue[limit.bzr_no][page_no]
-      p "#{limit.bzr_no}, #{limit.rsp_c}, #{limit_check.crtl_pge_no}, #{page_no}, #{@queue[limit.bzr_no].length}" if limit_check != nil
+      Rails.logger.debug "#{limit.bzr_no}, #{limit.rsp_c}, #{limit_check.crtl_pge_no}, #{page_no}, #{@queue[limit.bzr_no].length}" if limit_check != nil
 
       if limit_check != nil
         header = { :business_no => limit.bzr_no.to_s, page_no: page_no.to_i }
@@ -314,7 +301,6 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
         @queue.delete limit.bzr_no
 
         Rails.logger.debug "QUEUE DELETE #{limit.bzr_no}, #{@queue.length}"
-
 
         if @queue.length == 0
 
@@ -347,7 +333,7 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
         # end
 
 
-        EventMachine::connect '127.0.0.1', 19703, Client
+        EventMachine::connect 'sas-card', 19703, Client
       }
     end
   end

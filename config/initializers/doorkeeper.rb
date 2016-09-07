@@ -19,6 +19,8 @@ Doorkeeper.configure do
 
     Rails.logger.debug "USER : #{user}, #{user.valid_password?(params[:password])}, #{params[:grant_type]}, #{user && user.valid_password?(params[:password])}"
 
+    Rails.logger.debug user.authorities.to_json
+
     user #if user && user.valid_password?(params[:password])
   end
 
@@ -44,7 +46,7 @@ Doorkeeper.configure do
 
   # Use a custom class for generating the access token.
   # https://github.com/doorkeeper-gem/doorkeeper#custom-access-token-generator
-  # access_token_generator '::Doorkeeper::JWT'
+  access_token_generator '::Doorkeeper::JWT'
 
   # The controller Doorkeeper::ApplicationController inherits from.
   # Defaults to ActionController::Base.
@@ -127,3 +129,45 @@ Doorkeeper.configure do
 end
 
 Doorkeeper.configuration.token_grant_types << 'password'
+
+Doorkeeper::JWT.configure do
+  # Set the payload for the JWT token. This should contain unique information
+  # about the user.
+  # Defaults to a randomly generated token in a hash
+  # { token: "RANDOM-TOKEN" }
+  token_payload do |opts|
+    user = User.find(opts[:resource_owner_id])
+
+    Rails.logger.debug user.authorities.to_json
+
+    {
+        user: {
+            id: user.id,
+            login: user.login,
+            email: user.email,
+            authority: user.user_authorities.map(&:code)
+        }
+    }
+  end
+
+  # Use the application secret specified in the Access Grant token
+  # Defaults to false
+  # If you specify `use_application_secret true`, both secret_key and secret_key_path will be ignored
+  use_application_secret true
+
+  # Set the encryption secret. This would be shared with any other applications
+  # that should be able to read the payload of the token.
+  # Defaults to "secret"
+  # secret_key "MY-SECRET"
+
+  # If you want to use RS* encoding specify the path to the RSA key
+  # to use for signing.
+  # If you specify a secret_key_path it will be used instead of secret_key
+  # secret_key_path "path/to/file.pem"
+
+  # Specify encryption type. Supports any algorithim in
+  # https://github.com/progrium/ruby-jwt
+  # defaults to nil
+  # defaults to nil
+  # encryption_method :hs512
+end
