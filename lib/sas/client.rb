@@ -62,6 +62,7 @@ module Sas
       # # }
 
 
+      is_first = false
 
       sql = <<-SQL
 SELECT
@@ -143,37 +144,39 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
 
         end
 
-        if items.count > 0
-          @queue[business_no['business_no']] = queue
+        @queue[business_no['business_no']] = queue
 
-          @queue[business_no['business_no']].each do |limit|
-            # p items.to_json
+        @queue[business_no['business_no']].each do |limit|
+          # p items.to_json
 
-            # p "KEY : #{key}"
-            # p aa
-            cards = []
+          # p "KEY : #{key}"
+          # p aa
+          cards = []
 
-            limit.items.each do |cc|
-              card = { :card_no => cc.card_no.to_s, amt: cc.lim_am.to_i }
-              cards << card
-            end
-
-
-            LimitLog.create(
-                type_cd: 'P001',
-                hdr_c: limit.hdr_c,
-                tsk_dv_c: limit.tsk_dv_c,
-                etxt_snrc_sn: limit.etxt_snrc_sn,
-                trs_dt: limit.trs_dt,
-                trs_t: limit.trs_t,
-                rsp_c: limit.rsp_c,
-                bzr_no: limit.bzr_no,
-                dlng_dv_c: "#{limit.dlng_dv_c}000",
-                crtl_pge_no: limit.crtl_pge_no,
-                wo_pge_n: limit.wo_pge_n,
-                card: cards.to_json
-            )
+          limit.items.each do |cc|
+            card = { :card_no => cc.card_no.to_s, amt: cc.lim_am.to_i }
+            cards << card
           end
+
+
+          LimitLog.create(
+              type_cd: 'P001',
+              hdr_c: limit.hdr_c,
+              tsk_dv_c: limit.tsk_dv_c,
+              etxt_snrc_sn: limit.etxt_snrc_sn,
+              trs_dt: limit.trs_dt,
+              trs_t: limit.trs_t,
+              rsp_c: limit.rsp_c,
+              bzr_no: limit.bzr_no,
+              dlng_dv_c: "#{limit.dlng_dv_c}000",
+              crtl_pge_no: limit.crtl_pge_no,
+              wo_pge_n: limit.wo_pge_n,
+              card: cards.to_json
+          )
+        end
+
+        if is_first == false
+          is_first = true
 
           EM.add_timer(2) {
             @redis.publish('SAS.SEND', {business_no: business_no['business_no'], page_no: 0}.to_json)
@@ -200,7 +203,7 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
       @buffer << fragment
       @current_size += fragment.length
 
-      p "CURRENT_SIZE: #{@current_size}"
+      Rails.logger.debug "CURRENT_SIZE: #{@current_size}"
 
 
       if @current_size == @data_size
@@ -311,7 +314,17 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
 
           Rails.logger.debug '전송완료'
           close_connection_after_writing
+        else
+          item = @queue.first.first
+
+          header = { :business_no => item.bzr_no.to_s, page_no: 0 }
+
+          Rails.logger.debug "SAS.SEND : #{header}"
+
+          # send_header = {business_no: limit.bzr_no, page_no: page_no + 1}
+          @redis.publish('SAS.SEND', header.to_json)
         end
+
       end
 
 
