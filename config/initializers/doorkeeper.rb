@@ -142,6 +142,10 @@ Doorkeeper::JWT.configure do
     Rails.logger.debug user.authorities.to_json
 
     {
+        iss: 'sas',
+        iat: DateTime.current.utc.to_i,
+        jti: SecureRandom.uuid,
+
         user: {
             id: user.id,
             login: user.login,
@@ -150,9 +154,9 @@ Doorkeeper::JWT.configure do
         }
     }
 
-    secret_key '1234567890'
-
-    encryption_method :hs256
+    # secret_key '1234567890'
+    #
+    # encryption_method :hs256
   end
 
   # Use the application secret specified in the Access Grant token
