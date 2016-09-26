@@ -17,7 +17,7 @@ Doorkeeper.configure do
 
     user = User.find_for_database_authentication(login: params[:username])
 
-    Rails.logger.debug "USER : #{user}, #{params[:grant_type]}, #{user && user.valid_password?(params[:password])}"
+    Rails.logger.debug "USER : #{user}, #{params[:grant_type]}, #{params[:password]} #{user && user.valid_password?(params[:password])}"
 
     # Rails.logger.debug user.authorities.to_json
 
