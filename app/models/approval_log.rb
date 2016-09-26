@@ -4,6 +4,9 @@ class ApprovalLog < ActiveRecord::Base
 
   # when defining create method then return ID of new record that will be assigned to id attribute of new object
   set_create_method do
+
+    Rails.logger.debug "apr_can_yn : #{apr_can_yn}"
+
     plsql.log_pkg.insert_approval(
         i_type_cd: type_cd,
         i_hdr_c: hdr_c,
@@ -18,7 +21,7 @@ class ApprovalLog < ActiveRecord::Base
         i_apr_t: apr_t,
         i_apr_no: apr_no,
         i_apr_am: apr_am,
-        i_apr_can_yn: apr_can_yn == 'Y' ? 'Y' : 'N',
+        i_apr_can_yn: apr_can_yn.upcase == 'Y' ? 'Y' : 'N',
         i_apr_ts: apr_ts,
         i_apr_can_dtm: apr_can_dtm,
         i_mrc_no: mrc_no,
