@@ -17,11 +17,11 @@ Doorkeeper.configure do
 
     user = User.find_for_database_authentication(login: params[:username])
 
-    Rails.logger.debug "USER : #{user}, #{user.valid_password?(params[:password])}, #{params[:grant_type]}, #{user && user.valid_password?(params[:password])}"
+    # Rails.logger.debug "USER : #{user}, #{user.valid_password?(params[:password])}, #{params[:grant_type]}, #{user && user.valid_password?(params[:password])}"
 
-    Rails.logger.debug user.authorities.to_json
+    # Rails.logger.debug user.authorities.to_json
 
-    user #if user && user.valid_password?(params[:password])
+    user if user && user.valid_password?(params[:password])
   end
 
 
@@ -55,7 +55,7 @@ Doorkeeper.configure do
 
   # Reuse access token for the same resource owner within an application (disabled by default)
   # Rationale: https://github.com/doorkeeper-gem/doorkeeper/issues/383
-  reuse_access_token
+  # reuse_access_token
 
   # Issue access tokens with refresh token (disabled by default)
   use_refresh_token
