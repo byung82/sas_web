@@ -21,7 +21,7 @@ class ApprovalLog < ActiveRecord::Base
         i_apr_t: apr_t,
         i_apr_no: apr_no,
         i_apr_am: apr_am,
-        i_apr_can_yn: apr_can_yn.upcase == 'Y' ? 'Y' : 'N',
+        i_apr_can_yn: apr_can_yn == true ? 'Y' : 'N',
         i_apr_ts: apr_ts,
         i_apr_can_dtm: apr_can_dtm,
         i_mrc_no: mrc_no,
