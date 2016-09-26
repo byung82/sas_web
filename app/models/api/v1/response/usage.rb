@@ -21,7 +21,6 @@ module Api
 
           items = items.page page
 
-
           usage = Usage.new
           usage.success = true
           usage.total_count = items.total_count

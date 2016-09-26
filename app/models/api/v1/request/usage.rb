@@ -32,11 +32,10 @@ module Api
 
         def self.create(params)
 
-          items = params[:id].split(/,/)
-
+          # items = params[:id].split(/,/)
           item = Usage.new
-          item.business_no = items[0]
-          item.user_seq = items[1]
+          item.business_no = params[:business_no]
+          item.user_seq = params[:user_seq]
           item.page = params[:page] || 1
           item
         end

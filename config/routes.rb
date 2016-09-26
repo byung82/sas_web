@@ -9,6 +9,7 @@ Rails.application.routes.draw do
       namespace :v1 do
         resources :charges, only: [:create]
         resources :cards, only: [:show, :update]
+        resources :usages, only: [:index]
       end
     end
   end

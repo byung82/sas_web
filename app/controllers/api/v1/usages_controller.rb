@@ -4,7 +4,7 @@ module Api
 
       protect_from_forgery with: :null_session
 
-      def show
+      def index
 
         item = Api::V1::Request::Usage.create(params)
 
