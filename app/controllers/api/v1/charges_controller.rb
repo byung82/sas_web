@@ -23,7 +23,7 @@ module Api
           @item = LimitRequest.create!(
                                   card_no: item.card_no,
                                   business_no: item.business_no,
-                                  amt: item.amt.to_i,
+                                  amt: store_card.sync_amt + item.amt.to_i,
                                   limit_cd: 'CL001',
                                   store: store,
                                   store_card: store_card,
