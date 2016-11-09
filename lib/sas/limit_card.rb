@@ -178,7 +178,7 @@ WHERE LIMIT_AMT - SYNC_AMT != 0
       #   cards << aa
       # end
       #
-      LimitLog.create(
+      LimitCardLog.create(
           type_cd: 'P002',
           hdr_c: limit.hdr_c,
           tsk_dv_c: limit.tsk_dv_c,
