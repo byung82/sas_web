@@ -1,5 +1,5 @@
 
-module Limit
+module Sas
 
   class LimitCard < EventMachine::Connection
 
@@ -8,38 +8,20 @@ module Limit
       @queue = Hash.new
 
 
-      # (1..10).each do |item|
-      #   @redis.publish('SAS.RECV', item)
-      #   p "ITEM : #{item}"
-      # end
-
       @redis = EM::Hiredis.connect
-      #
-      # p "#{@redis}"
-      # # send_sub = @redis.pubsub
-      # # recv_sub = @redis.pubsub
-      #
+
       pubsub = @redis.pubsub
-      #
-      # p "#{pubsub}"
-      #
       pubsub.subscribe 'CARD_SYNC.SEND'
       pubsub.subscribe 'CARD_SYNC.RECV'
-      # # pubsub.subscribe 'SAS.RECV'
-      #
-      #
+
       pubsub.on(:message) do |channel, message|
 
         p "#{channel}, #{message}"
 
         if channel == 'CARD_SYNC.SEND'
-          message = JSON.parse(message, symbolize_names: true)
+          #         message = JSON.parse(message, symbolize_names: true)
 
-          limit = @queue[message[:card_no]]
-          # limit = queue[message[:card_no]]
-          # p limit.items.to_json
-          # ttt = JSON.parse(aaa)
-
+          limit = @queue[message]
           send_data limit.to_binary_s
         end
       end
@@ -54,14 +36,6 @@ module Limit
     def post_init
       Rails.logger.debug '새로운접속'
 
-      # p "connect"
-
-      # EM.add_timer(2) {
-      #   @redis.publish('SAS.SEND', {data: 111})
-      #   @redis.publish('SAS.RECV', {data: 222})
-      # # }
-
-
       is_first = false
 
       sql = <<-SQL
@@ -73,36 +47,11 @@ FROM STORE_CARDS
 WHERE LIMIT_AMT - SYNC_AMT != 0
       SQL
 
-#       sql = <<-SQL
-# SELECT
-#   BUSINESS_NO
-# FROM STORES
-# WHERE SEND_AT IN
-# (
-#   SELECT
-#     MIN(SEND_AT)
-#   FROM STORES
-#   WHERE SYNC_YN = 'Y'
-# )
-# AND ROWNUM=1
-#       SQL
-
       cards = LimitRequest.connection.select_all(sql)
 
-      cards.each do |card_no|
+      cards.each do |item|
 
-        # plsql.store_card_pkg.update_store_card(business_no['business_no'])
-
-        # p "EXECUTE PLSQL : #{business_no['business_no']}"
-        #
-        # sql = <<-SQL
-# SELECT
-#   A.BUSINESS_NO, A.CARD_NO, DECODE(NVL(B.SEND_YN, 'Y'), 'Y', A.SYNC_AMT, A.SYNC_AMT + B.AMT) AMT
-# FROM STORE_CARDS A, LIMIT_REQUESTS B
-# WHERE A.CARD_NO = B.CARD_NO(+)
-# AND A.BUSINESS_NO = '#{business_no['business_no']}'
-#         SQL
-
+        card_no = item['card_no']
 
         now = Time.now.localtime
 
@@ -113,22 +62,26 @@ WHERE LIMIT_AMT - SYNC_AMT != 0
         limit.trs_dt = now.strftime('%Y%m%d')
         limit.trs_t = now.strftime('%H%M%S')
         limit.rsp_c = '0000'
-        limit.card_no = '9410852258686100'
+        limit.card_no = card_no
+
+        len = limit.to_binary_s.length
+        limit.hdr_c = (len-4).to_s.rjust(4, '0')
 
         @queue[card_no] = limit
 
-        # @queue[business_no['business_no']].each do |limit|
-        #   # p items.to_json
-        #
-        #   # p "KEY : #{key}"
-        #   # p aa
-        #   cards = []
-        #
-        #   limit.items.each do |cc|
-        #     card = { :card_no => cc.card_no.to_s, amt: cc.lim_am.to_i }
-        #     cards << card
-        #   end
-        #
+
+        LimitCardLog.create(
+            type_cd: 'P001',
+            hdr_c: limit.hdr_c,
+            tsk_dv_c: limit.tsk_dv_c,
+            etxt_snrc_sn: limit.etxt_snrc_sn,
+            trs_dt: limit.trs_dt,
+            trs_t: limit.trs_t,
+            rsp_c: limit.rsp_c,
+            card_no: limit.card_no,
+            amt: limit.amt
+        )
+
         #
         #   LimitLog.create(
         #       type_cd: 'P001',
@@ -150,7 +103,7 @@ WHERE LIMIT_AMT - SYNC_AMT != 0
           is_first = true
 
           EM.add_timer(2) {
-            @redis.publish('CARD_SYNC.SEND', {card_no: card_no}.to_json)
+            @redis.publish('CARD_SYNC.SEND', card_no)
           }
         end
       end
@@ -184,7 +137,7 @@ WHERE LIMIT_AMT - SYNC_AMT != 0
           Rails.logger.warn "데이터수신 오류 : #{e}, #{e.backtrace}"
 
           close_connection_after_writing
-          # make sure you catch your exceptions here or your server will explode!
+            # make sure you catch your exceptions here or your server will explode!
         ensure
           # if you're catching exceptions, make sure you always clear your buffer in the end
           # otherwise it'll mess with your next framed messaging processing
@@ -214,7 +167,6 @@ WHERE LIMIT_AMT - SYNC_AMT != 0
 
       limit = Sas::Packet::LimitCard.read(buffer)
 
-
       Rails.logger.debug "process_message : #{limit}"
 
       # page_no = limit.crtl_pge_no.to_s.to_i
@@ -226,80 +178,33 @@ WHERE LIMIT_AMT - SYNC_AMT != 0
       #   cards << aa
       # end
       #
-      # log = LimitLog.create(
-      #     type_cd: 'P002',
-      #     hdr_c: limit.hdr_c,
-      #     tsk_dv_c: limit.tsk_dv_c,
-      #     etxt_snrc_sn: limit.etxt_snrc_sn,
-      #     trs_dt: limit.trs_dt,
-      #     trs_t: limit.trs_t,
-      #     rsp_c: limit.rsp_c,
-      #     bzr_no: limit.bzr_no,
-      #     dlng_dv_c: limit.dlng_dv_c,
-      #     crtl_pge_no: limit.crtl_pge_no,
-      #     wo_pge_n: limit.wo_pge_n,
-      #     card: cards.to_json
-      # )
-      #
-      # # @queue[limit.bzr_no].delete_at page_no-1
-      #
-      #
-      # limit.items.each do |item|
-      #   request = LimitRequest.find_by(card_no: item.card_no.to_s)
-      #
-      #   if !request.present?
-      #     next
-      #   end
-      #
-      #   request.send_yn = true
-      #   request.limit_log_id = log.id
-      #   request.error_yn = limit.rsp_c != '0000' && limit.rsp_c != '0001'
-      #   request.code = limit.rsp_c
-      #
-      #   request.save
-      # end
+      LimitLog.create(
+          type_cd: 'P002',
+          hdr_c: limit.hdr_c,
+          tsk_dv_c: limit.tsk_dv_c,
+          etxt_snrc_sn: limit.etxt_snrc_sn,
+          trs_dt: limit.trs_dt,
+          trs_t: limit.trs_t,
+          rsp_c: limit.rsp_c,
+          card_no: limit.card_no,
+          amt: limit.amt
+      )
 
-      # p @queue[limit.bzr_no]
+      @queue.delete limit.card_no
 
-      # item = @queue[limit.bzr_no][page_no + 1]
-      #
-      # p item
+      Rails.logger.debug "QUEUE DELETE #{limit.card_no}, #{@queue.length}"
+      p "QUEUE DELETE #{limit.card_no}, #{@queue.length}"
 
-      limit_check = @queue[limit.card_no]
-      # Rails.logger.debug "#{limit.bzr_no}, #{limit.rsp_c}, #{limit_check.crtl_pge_no}, #{page_no}, #{@queue[limit.bzr_no].length}" if limit_check != nil
+      if @queue.length == 0
 
-      if limit_check != nil
-        header = { :card_no => limit.card_no }
-
+        Rails.logger.debug '전송완료'
+        close_connection_after_writing
+      else
+        item = @queue.first
         Rails.logger.debug "CARD_SYNC.SEND : #{header}"
 
-        # send_header = {business_no: limit.bzr_no, page_no: page_no + 1}
-        @redis.publish('CARD_SYNC.SEND', header.to_json)
-      else
-
-        @queue.delete limit.card_no
-
-        Rails.logger.debug "QUEUE DELETE #{limit.card_no}, #{@queue.length}"
-
-        if @queue.length == 0
-
-          Rails.logger.debug '전송완료'
-          close_connection_after_writing
-        else
-          item = @queue.first
-
-          header = { :card_no => item.card_no }
-
-          Rails.logger.debug "CARD_SYNC.SEND : #{header}"
-
-          # send_header = {business_no: limit.bzr_no, page_no: page_no + 1}
-          @redis.publish('CARD_SYNC.SEND', header.to_json)
-        end
-
+        @redis.publish('CARD_SYNC.SEND', item.card_no)
       end
-
-
-      # close_connection_after_writing
     end
 
     def self.startup
@@ -312,26 +217,9 @@ WHERE LIMIT_AMT - SYNC_AMT != 0
 
 
       EventMachine::run {
-        # begin
-        # rescue
-        # end
-        # @redis.publish('DRIVER.MESSAGE', {data: 111})
-
-        # (1..10).each do |item|
-        #   p "ITEM : #{item}"
-        # end
-
-
-        EventMachine::connect 'sas-card', 19703, Client
+        EventMachine::connect 'sas-card', 19703, LimitCard
       }
     end
   end
-  # module Server
-  #   def self.startup
-  #     Rails.logger.debug 'STARTUP'
-  #   end
-  # end
-  # EventMachine.run {
-  #   EventMachine::start_server '0.0.0.0', 8888, ServerConnection
-  # }
+
 end

@@ -1,3 +1,3 @@
-module Limit
+module Sas
   LimitCard.startup
 end
