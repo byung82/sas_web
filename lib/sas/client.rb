@@ -99,9 +99,9 @@ AND b.BUSINESS_NO = a.BUSINESS_NO(+)
 
       business_nos.each do |business_no|
 
-        plsql.store_card_pkg.update_store_card(business_no['business_no'])
-
-        p "EXECUTE PLSQL : #{business_no['business_no']}"
+        # plsql.store_card_pkg.update_store_card(business_no['business_no'])
+        #
+        # p "EXECUTE PLSQL : #{business_no['business_no']}"
 
         sql = <<-SQL
 SELECT
@@ -118,6 +118,8 @@ AND SEND_YN <> 'N' OR ERROR_YN = 'Y'
         max_page = (items.count.to_f / 250).ceil
 
         page_no = 1
+
+        p "ITEMS : #{items.count}"
 
         items.each_slice(250) do |requests|
 
