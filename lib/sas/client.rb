@@ -65,20 +65,8 @@ module Sas
       is_first = false
 
       sql = <<-SQL
-SELECT
-  b.BUSINESS_NO
-FROM
-(
-  SELECT
-    ID,
-    BUSINESS_NO,
-    ROW_NUMBER() OVER (PARTITION BY BUSINESS_NO ORDER BY BUSINESS_NO) ORDER_NO
-  FROM limit_requests
-  WHERE SEND_YN = 'N'
-) a,
-STORES b
-WHERE 1 = a.ORDER_NO(+)
-AND b.BUSINESS_NO = a.BUSINESS_NO(+)
+SELECT BUSINESS_NO
+FROM STORES WHERE SYNC_YN='Y'
       SQL
 
 #       sql = <<-SQL
