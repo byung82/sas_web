@@ -96,7 +96,7 @@ SELECT
   B.BUSINESS_NO, B.CARD_NO, B.AMT
 FROM LIMIT_REQUESTS B
 WHERE BUSINESS_NO = '#{business_no['business_no']}'
-AND SEND_YN <> 'N' OR ERROR_YN = 'Y'
+AND SEND_YN = 'N' OR ERROR_YN = 'Y'
         SQL
 
         queue = Array.new
