@@ -105,10 +105,10 @@ AND b.BUSINESS_NO = a.BUSINESS_NO(+)
 
         sql = <<-SQL
 SELECT
-  A.BUSINESS_NO, A.CARD_NO, DECODE(NVL(B.SEND_YN, 'Y'), 'Y', A.SYNC_AMT, A.SYNC_AMT + B.AMT) AMT
-FROM STORE_CARDS A, LIMIT_REQUESTS B
-WHERE A.CARD_NO = B.CARD_NO(+)
-AND A.BUSINESS_NO = '#{business_no['business_no']}'
+  B.BUSINESS_NO, B.CARD_NO, B.AMT
+FROM LIMIT_REQUESTS B
+WHERE BUSINESS_NO = '#{business_no['business_no']}'
+AND SEND_YN <> 'N' OR ERROR_YN = 'Y'
         SQL
 
         queue = Array.new
@@ -118,7 +118,6 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
         max_page = (items.count.to_f / 250).ceil
 
         page_no = 1
-
 
         items.each_slice(250) do |requests|
 

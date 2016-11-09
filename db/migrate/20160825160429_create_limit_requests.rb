@@ -80,6 +80,11 @@ class CreateLimitRequests < ActiveRecord::Migration
                                      code: 'CHARGE_TYPE_CD', idty: 'CT004',
                                      sval1: '코인', explan: '충전방식',
                                      created: u, updated: u)
+
+          CommDet.find_or_create_by!(comm_mst: c,
+                                     code: 'CHARGE_TYPE_CD', idty: 'CT005',
+                                     sval1: '동기화', explan: '충전방식',
+                                     created: u, updated: u)
         end
 
         c = CommMst.find_or_initialize_by(code: 'CHARGE_LIMIT_CD', explan: '한도코드', created: u, updated: u)
@@ -96,6 +101,11 @@ class CreateLimitRequests < ActiveRecord::Migration
           CommDet.find_or_create_by!(comm_mst: c,
                                      code: 'CHARGE_TYPE_CD', idty: 'CL002',
                                      sval1: '차감', explan: '한도코드',
+                                     created: u, updated: u)
+
+          CommDet.find_or_create_by!(comm_mst: c,
+                                     code: 'CHARGE_TYPE_CD', idty: 'CL003',
+                                     sval1: '동기화', explan: '한도코드',
                                      created: u, updated: u)
         end
       end

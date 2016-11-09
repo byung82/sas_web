@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161109075850) do
+ActiveRecord::Schema.define(version: 20161109083255) do
 
   create_table "approval_logs", force: :cascade do |t|
     t.string   "ymd",          limit: 8,                                                comment: "년월일"
@@ -321,6 +321,7 @@ ActiveRecord::Schema.define(version: 20161109075850) do
     t.datetime "created_at",                                             null: false
     t.datetime "updated_at",                                             null: false
     t.integer  "sync_amt",                precision: 38, default: 0
+    t.integer  "lookup_amt",              precision: 38, default: 0
   end
 
   add_index "store_cards", ["card_no"], name: "store_cards_idx_03"
