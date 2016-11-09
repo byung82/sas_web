@@ -11,15 +11,51 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160825105403) do
+ActiveRecord::Schema.define(version: 20160928045232) do
 
-  create_table "authorities", comment: "권한 테이블", force: :cascade do |t|
-    t.string   "ymd",        limit: 8,                               comment: "년월일"
-    t.integer  "seq",                    precision: 38,              comment: "순번"
-    t.string   "code",       limit: 20,                              comment: "권한코드"
-    t.string   "explan",     limit: 100,                             comment: "코드 설명"
-    t.integer  "created_id", limit: nil,                             comment: "생성자"
-    t.integer  "updated_id", limit: nil,                             comment: "수정자"
+  create_table "approval_logs", force: :cascade do |t|
+    t.string   "ymd",          limit: 8,                                                comment: "???"
+    t.integer  "seq",                      precision: 38,                               comment: "??"
+    t.string   "type_cd",                                 default: "P002",              comment: "P001:????, P002: ????"
+    t.string   "hdr_c",        limit: 4,                                                comment: "??LEN"
+    t.string   "tsk_dv_c",     limit: 4,                                                comment: "??????"
+    t.string   "etxt_snrc_sn", limit: 10,                                               comment: "?????????"
+    t.string   "trs_dt",       limit: 8,                                                comment: "????"
+    t.string   "trs_t",        limit: 6,                                                comment: "????"
+    t.string   "rsp_c",        limit: 4,                                                comment: "???? 0000:??, 0010:????, 0011:?????, 0012:???, 0041:?????, 0099:????"
+    t.string   "pprn1",        limit: 18,                                               comment: "??1"
+    t.string   "card_no",      limit: 16,                                               comment: "????"
+    t.string   "apr_dt",       limit: 8,                                                comment: "????"
+    t.string   "apr_t",        limit: 6,                                                comment: "????"
+    t.string   "apr_no",       limit: 8,                                                comment: "???? ???, ???? ????"
+    t.string   "apr_am",       limit: 18,                                               comment: "????"
+    t.boolean  "apr_can_yn",   limit: nil,                                              comment: "?????? Y:????"
+    t.string   "apr_ts",       limit: 17,                                               comment: "?????? ???? ?????? yyyymmddhh24missSSS"
+    t.string   "apr_can_dtm",  limit: 14,                                               comment: "?????? ???? ?????? yyyymmddhh24miss"
+    t.string   "mrc_no",       limit: 12,                                               comment: "?????"
+    t.string   "mrc_nm",       limit: 50,                                               comment: "????"
+    t.string   "bzr_no",       limit: 10,                                               comment: "?????"
+    t.string   "mrc_dlgps_nm", limit: 12,                                               comment: "???????"
+    t.string   "mrc_tno",      limit: 16,                                               comment: "???????"
+    t.string   "mrc_zip",      limit: 6,                                                comment: "???????"
+    t.string   "mrc_adr",      limit: 70,                                               comment: "?????"
+    t.string   "mrc_dtl_adr",  limit: 70,                                               comment: "???????"
+    t.string   "pprn2",        limit: 16,                                               comment: "??2"
+    t.datetime "created_at",                                               null: false
+    t.datetime "updated_at",                                               null: false
+  end
+
+  add_index "approval_logs", ["card_no"], name: "approval_logs_idx_03"
+  add_index "approval_logs", ["type_cd"], name: "approval_logs_idx_02"
+  add_index "approval_logs", ["ymd", "seq"], name: "approval_logs_idx_01", unique: true
+
+  create_table "authorities", comment: "?? ???", force: :cascade do |t|
+    t.string   "ymd",        limit: 8,                               comment: "???"
+    t.integer  "seq",                    precision: 38,              comment: "??"
+    t.string   "code",       limit: 20,                              comment: "????"
+    t.string   "explan",     limit: 100,                             comment: "?? ??"
+    t.integer  "created_id", limit: nil,                             comment: "???"
+    t.integer  "updated_id", limit: nil,                             comment: "???"
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
   end
@@ -31,40 +67,50 @@ ActiveRecord::Schema.define(version: 20160825105403) do
 
   add_primary_key_trigger "authorities"
 
-  create_table "comm_dets", comment: "공통코드 상세", force: :cascade do |t|
-    t.string   "ymd",         limit: 8,                                                         comment: "년월일"
-    t.integer  "seq",                     precision: 38,                                        comment: "순번"
+  create_table "card_syncs", comment: "?????? ?????? ????????? ?????????", id: false, force: :cascade do |t|
+    t.integer  "id",          limit: nil,                            comment: "?????????"
+    t.string   "ymd",         limit: 6,                              comment: "?????????"
+    t.integer  "seq",                     precision: 38,             comment: "??????"
+    t.string   "business_no", limit: 10,                             comment: "????????? ????????????"
+    t.string   "card_no",     limit: 16,                             comment: "????????????"
+    t.integer  "balance",                 precision: 38, default: 0, comment: "??????"
+    t.datetime "sync_at",                                            comment: "????????? ??????"
+  end
+
+  create_table "comm_dets", comment: "???? ??", force: :cascade do |t|
+    t.string   "ymd",         limit: 8,                                                         comment: "???"
+    t.integer  "seq",                     precision: 38,                                        comment: "??"
     t.integer  "comm_mst_id", limit: nil,                                                       comment: "comm_dets FK"
-    t.string   "code",        limit: 20,                                                        comment: "코드"
+    t.string   "code",        limit: 20,                                                        comment: "??"
     t.string   "idty",        limit: 20,                                                        comment: "idty"
-    t.string   "explan",      limit: 100,                                                       comment: "설명"
-    t.boolean  "deleted_yn",  limit: nil,                          default: false,              comment: "사용여부"
-    t.string   "sval1",                                                                         comment: "문자열값 1"
-    t.string   "sval2",                                                                         comment: "문자열값 2"
-    t.string   "sval3",                                                                         comment: "문자열값 3"
-    t.string   "sval4",                                                                         comment: "문자열값 3"
-    t.string   "sval5",                                                                         comment: "문자열값 5"
-    t.string   "sval6",                                                                         comment: "문자열값 6"
-    t.string   "sval7",                                                                         comment: "문자열값 7"
-    t.string   "sval8",                                                                         comment: "문자열값 8"
-    t.string   "sval9",                                                                         comment: "문자열값 9"
-    t.string   "sval10",                                                                        comment: "문자열값 10"
-    t.decimal  "val1",                    precision: 10, scale: 3,                              comment: "숫자값 1"
-    t.decimal  "val2",                    precision: 10, scale: 3,                              comment: "숫자값 2"
-    t.decimal  "val3",                    precision: 10, scale: 3,                              comment: "숫자값 3"
-    t.decimal  "val4",                    precision: 10, scale: 3,                              comment: "숫자값 4"
-    t.decimal  "val5",                    precision: 10, scale: 3,                              comment: "숫자값 5"
-    t.decimal  "val6",                    precision: 10, scale: 3,                              comment: "숫자값 6"
-    t.decimal  "val7",                    precision: 10, scale: 3,                              comment: "숫자값 7"
-    t.decimal  "val8",                    precision: 10, scale: 3,                              comment: "숫자값 8"
-    t.decimal  "val9",                    precision: 10, scale: 3,                              comment: "숫자값 9"
-    t.decimal  "val10",                   precision: 10, scale: 3,                              comment: "숫자값 10"
-    t.integer  "created_id",  limit: nil,                                                       comment: "생성자"
-    t.integer  "updated_id",  limit: nil,                                                       comment: "수정자"
-    t.integer  "deleted_id",  limit: nil,                                                       comment: "삭제자"
+    t.string   "explan",      limit: 100,                                                       comment: "??"
+    t.boolean  "deleted_yn",  limit: nil,                          default: false,              comment: "????"
+    t.string   "sval1",                                                                         comment: "???? 1"
+    t.string   "sval2",                                                                         comment: "???? 2"
+    t.string   "sval3",                                                                         comment: "???? 3"
+    t.string   "sval4",                                                                         comment: "???? 3"
+    t.string   "sval5",                                                                         comment: "???? 5"
+    t.string   "sval6",                                                                         comment: "???? 6"
+    t.string   "sval7",                                                                         comment: "???? 7"
+    t.string   "sval8",                                                                         comment: "???? 8"
+    t.string   "sval9",                                                                         comment: "???? 9"
+    t.string   "sval10",                                                                        comment: "???? 10"
+    t.decimal  "val1",                    precision: 10, scale: 3,                              comment: "??? 1"
+    t.decimal  "val2",                    precision: 10, scale: 3,                              comment: "??? 2"
+    t.decimal  "val3",                    precision: 10, scale: 3,                              comment: "??? 3"
+    t.decimal  "val4",                    precision: 10, scale: 3,                              comment: "??? 4"
+    t.decimal  "val5",                    precision: 10, scale: 3,                              comment: "??? 5"
+    t.decimal  "val6",                    precision: 10, scale: 3,                              comment: "??? 6"
+    t.decimal  "val7",                    precision: 10, scale: 3,                              comment: "??? 7"
+    t.decimal  "val8",                    precision: 10, scale: 3,                              comment: "??? 8"
+    t.decimal  "val9",                    precision: 10, scale: 3,                              comment: "??? 9"
+    t.decimal  "val10",                   precision: 10, scale: 3,                              comment: "??? 10"
+    t.integer  "created_id",  limit: nil,                                                       comment: "???"
+    t.integer  "updated_id",  limit: nil,                                                       comment: "???"
+    t.integer  "deleted_id",  limit: nil,                                                       comment: "???"
     t.datetime "created_at",                                                       null: false
     t.datetime "updated_at",                                                       null: false
-    t.datetime "deleted_at",                                                                    comment: "삭제일"
+    t.datetime "deleted_at",                                                                    comment: "???"
   end
 
   add_index "comm_dets", ["code", "idty"], name: "comm_dets_idx_02", unique: true
@@ -77,18 +123,18 @@ ActiveRecord::Schema.define(version: 20160825105403) do
 
   add_primary_key_trigger "comm_dets"
 
-  create_table "comm_msts", comment: "공통코드 마스터", force: :cascade do |t|
-    t.string   "ymd",        limit: 6,                                               comment: "년월일"
-    t.integer  "seq",                    precision: 38,                              comment: "순번"
-    t.string   "code",       limit: 20,                                              comment: "코드"
-    t.string   "explan",     limit: 100,                                             comment: "설명"
-    t.boolean  "deleted_yn", limit: nil,                default: false,              comment: "사용여부"
-    t.integer  "created_id", limit: nil,                                             comment: "생성자"
-    t.integer  "updated_id", limit: nil,                                             comment: "수정자"
-    t.integer  "deleted_id", limit: nil,                                             comment: "삭제자"
+  create_table "comm_msts", comment: "???? ???", force: :cascade do |t|
+    t.string   "ymd",        limit: 6,                                               comment: "???"
+    t.integer  "seq",                    precision: 38,                              comment: "??"
+    t.string   "code",       limit: 20,                                              comment: "??"
+    t.string   "explan",     limit: 100,                                             comment: "??"
+    t.boolean  "deleted_yn", limit: nil,                default: false,              comment: "????"
+    t.integer  "created_id", limit: nil,                                             comment: "???"
+    t.integer  "updated_id", limit: nil,                                             comment: "???"
+    t.integer  "deleted_id", limit: nil,                                             comment: "???"
     t.datetime "created_at",                                            null: false
     t.datetime "updated_at",                                            null: false
-    t.datetime "deleted_at",                                                         comment: "삭제일"
+    t.datetime "deleted_at",                                                         comment: "???"
   end
 
   add_index "comm_msts", ["code"], name: "comm_msts_idx_02", unique: true
@@ -100,9 +146,21 @@ ActiveRecord::Schema.define(version: 20160825105403) do
 
   add_primary_key_trigger "comm_msts"
 
-  create_table "levels", comment: "레벨 TREE 구조", force: :cascade do |t|
-    t.string   "ymd",            limit: 8,                   comment: "년월일"
-    t.integer  "seq",                         precision: 38, comment: "순번"
+  create_table "error_tracks", comment: "?? ??", force: :cascade do |t|
+    t.string   "ymd",        limit: 8,                             comment: "???"
+    t.integer  "seq",                  precision: 38,              comment: "??"
+    t.text     "message"
+    t.text     "trace"
+    t.text     "parameter"
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+  end
+
+  add_primary_key_trigger "error_tracks"
+
+  create_table "levels", comment: "?? TREE ??", force: :cascade do |t|
+    t.string   "ymd",            limit: 8,                   comment: "???"
+    t.integer  "seq",                         precision: 38, comment: "??"
     t.string   "levelable_type", limit: 100
     t.integer  "levelable_id",   limit: nil
     t.string   "lvl",            limit: 3000
@@ -115,6 +173,74 @@ ActiveRecord::Schema.define(version: 20160825105403) do
   add_index "levels", ["ymd", "seq"], name: "levels_idx_01", unique: true
 
   add_primary_key_trigger "levels"
+
+  create_table "limit_logs", comment: "????/?? ?????", force: :cascade do |t|
+    t.string   "ymd",            limit: 8,                                                comment: "???"
+    t.integer  "seq",                        precision: 38,                               comment: "??"
+    t.string   "type_cd",                                   default: "P002",              comment: "P001:????, P002: ????"
+    t.string   "hdr_c",          limit: 4,                                                comment: "??LEN"
+    t.string   "tsk_dv_c",       limit: 4,                                                comment: "??????"
+    t.string   "etxt_snrc_sn",   limit: 10,                                               comment: "?????????"
+    t.string   "trs_dt",         limit: 8,                                                comment: "????"
+    t.string   "trs_t",          limit: 6,                                                comment: "????"
+    t.string   "rsp_c",          limit: 4,                                                comment: "???? 0000:??, 0010:????, 0011:?????, 0012:???, 0041:?????, 0099:????"
+    t.string   "pprn1",          limit: 18,                                               comment: "??1"
+    t.string   "bzr_no",         limit: 10,                                               comment: "???????"
+    t.boolean  "dlng_dv_c",      limit: nil,                                              comment: "??????"
+    t.string   "crtl_pge_no",    limit: 3,                                                comment: "???????"
+    t.string   "wo_pge_n",       limit: 3,                                                comment: "???????"
+    t.text     "card",                                                                    comment: "????"
+    t.string   "no2_trs_flr_cn", limit: 112,                                              comment: "??"
+    t.datetime "created_at",                                                 null: false
+    t.datetime "updated_at",                                                 null: false
+  end
+
+  add_index "limit_logs", ["bzr_no"], name: "limit_logs_idx_03"
+  add_index "limit_logs", ["type_cd"], name: "limit_logs_idx_02"
+  add_index "limit_logs", ["ymd", "seq"], name: "limit_logs_idx_01", unique: true
+
+  create_table "limit_requests", comment: "???? ???", force: :cascade do |t|
+    t.string   "ymd",           limit: 6,                                               comment: "???"
+    t.integer  "seq",                       precision: 38,                              comment: "??"
+    t.string   "type_cd",       limit: 20,                                              comment: "????"
+    t.string   "limit_cd",      limit: 20,                                              comment: "??/??"
+    t.string   "business_no",   limit: 10,                                              comment: "???????"
+    t.string   "card_no",       limit: 16,                                              comment: "????"
+    t.integer  "amt",                       precision: 38,                              comment: "?? ??"
+    t.boolean  "send_yn",       limit: nil,                default: false,              comment: "?? ??"
+    t.boolean  "error_yn",      limit: nil,                default: false,              comment: "???? ?? ??"
+    t.string   "code",          limit: 4,                                               comment: "????"
+    t.integer  "store_id",      limit: nil
+    t.integer  "store_card_id", limit: nil
+    t.integer  "created_id",    limit: nil
+    t.integer  "updated_id",    limit: nil
+    t.datetime "created_at",                                               null: false
+    t.datetime "updated_at",                                               null: false
+  end
+
+  add_index "limit_requests", ["business_no"], name: "limit_requests_idx_04"
+  add_index "limit_requests", ["created_id"], name: "limit_requests_idx_05"
+  add_index "limit_requests", ["error_yn"], name: "limit_requests_idx_03"
+  add_index "limit_requests", ["send_yn"], name: "limit_requests_idx_02"
+  add_index "limit_requests", ["store_card_id"], name: "limit_requests_idx_08"
+  add_index "limit_requests", ["store_id"], name: "limit_requests_idx_07"
+  add_index "limit_requests", ["updated_id"], name: "limit_requests_idx_06"
+  add_index "limit_requests", ["ymd", "seq"], name: "limit_requests_idx_01", unique: true
+
+  add_primary_key_trigger "limit_requests"
+
+  create_table "logs", comment: "API ????", force: :cascade do |t|
+    t.string   "ymd",        limit: 8,                             comment: "???"
+    t.integer  "seq",                  precision: 38,              comment: "??"
+    t.string   "login",                                            comment: "??? ???"
+    t.string   "method",                                           comment: "HTTP METHOD"
+    t.string   "controller",                                       comment: "controller class name"
+    t.text     "parameters",                                       comment: "HTTP PARAMS"
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+  end
+
+  add_primary_key_trigger "logs"
 
   create_table "oauth_access_grants", force: :cascade do |t|
     t.integer  "resource_owner_id", limit: nil,                null: false
@@ -132,13 +258,13 @@ ActiveRecord::Schema.define(version: 20160825105403) do
   create_table "oauth_access_tokens", force: :cascade do |t|
     t.integer  "resource_owner_id",      limit: nil
     t.integer  "application_id",         limit: nil
-    t.string   "token",                                                          null: false
-    t.string   "refresh_token"
-    t.integer  "expires_in",                         precision: 38
+    t.string   "token",                  limit: 1000,                             null: false
+    t.string   "refresh_token",          limit: 1000
+    t.integer  "expires_in",                          precision: 38
     t.datetime "revoked_at"
-    t.datetime "created_at",                                                     null: false
+    t.datetime "created_at",                                                      null: false
     t.string   "scopes"
-    t.string   "previous_refresh_token",                            default: "", null: false
+    t.string   "previous_refresh_token", limit: 1000,                default: ""
   end
 
   add_index "oauth_access_tokens", ["refresh_token"], name: "i_oau_acc_tok_ref_tok", unique: true
@@ -146,59 +272,78 @@ ActiveRecord::Schema.define(version: 20160825105403) do
   add_index "oauth_access_tokens", ["token"], name: "i_oauth_access_tokens_token", unique: true
 
   create_table "oauth_applications", force: :cascade do |t|
-    t.string   "name",                      null: false
-    t.string   "uid",                       null: false
-    t.string   "secret",                    null: false
-    t.text     "redirect_uri",              null: false
-    t.string   "scopes",       default: "", null: false
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.string   "name",                                  null: false
+    t.string   "uid",                                   null: false
+    t.string   "secret",                                null: false
+    t.text     "redirect_uri",                          null: false
+    t.string   "scopes",                   default: "", null: false
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+    t.integer  "owner_id",     limit: nil
+    t.string   "owner_type"
   end
 
+  add_index "oauth_applications", ["owner_id", "owner_type"], name: "i_oau_app_own_id_own_typ"
   add_index "oauth_applications", ["uid"], name: "i_oauth_applications_uid", unique: true
 
-  create_table "req_card_limits", force: :cascade do |t|
-    t.string   "business_no", limit: 10
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+  create_table "store_cards", comment: "??? ???? ", force: :cascade do |t|
+    t.string   "ymd",         limit: 8,                                               comment: "???"
+    t.integer  "seq",                     precision: 38,                              comment: "??"
+    t.string   "user_seq",    limit: 100,                                             comment: "????? ???"
+    t.integer  "store_id",    limit: nil
+    t.string   "phone_no",    limit: 20,                                              comment: "??????"
+    t.string   "business_no", limit: 10,                                              comment: "??????"
+    t.string   "card_no",     limit: 16,                                              comment: "????"
+    t.integer  "limit_amt",               precision: 38,                              comment: "??"
+    t.boolean  "lost_yn",     limit: nil,                default: false,              comment: "????"
+    t.datetime "created_at",                                             null: false
+    t.datetime "updated_at",                                             null: false
+    t.integer  "sync_amt",                precision: 38, default: 0
   end
 
-  create_table "seq_tab", id: false, force: :cascade do |t|
-    t.string  "gubun", limit: 100,                null: false
-    t.integer "seq",   limit: 12,  precision: 12, null: false
-    t.string  "ymd",   limit: 6,                  null: false
-  end
-
-  create_table "store_cards", comment: "가맹점 카드정보 ", force: :cascade do |t|
-    t.string   "ymd",        limit: 8,                                               comment: "년월일"
-    t.integer  "seq",                    precision: 38,                              comment: "순번"
-    t.integer  "store_id",   limit: nil
-    t.string   "phone_no",   limit: 20,                                              comment: "휴대전화번호"
-    t.string   "card_no",    limit: 16,                                              comment: "카드번호"
-    t.integer  "limit_amt",              precision: 38,                              comment: "한도"
-    t.boolean  "lost_yn",    limit: nil,                default: false,              comment: "분실여부"
-    t.datetime "created_at",                                            null: false
-    t.datetime "updated_at",                                            null: false
-  end
-
+  add_index "store_cards", ["card_no"], name: "store_cards_idx_03"
+  add_index "store_cards", ["phone_no"], name: "store_cards_idx_02"
   add_index "store_cards", ["ymd", "seq"], name: "store_cards_idx_01", unique: true
 
-  create_table "store_limit_dets", id: false, force: :cascade do |t|
-    t.string "column1", limit: 20
+  create_table "store_limit_dets", comment: "?? ?? ?? ??", force: :cascade do |t|
+    t.string   "ymd",                limit: 8,                               comment: "???"
+    t.integer  "seq",                            precision: 38,              comment: "??"
+    t.string   "business_no",                                                comment: "???????"
+    t.string   "user_seq",           limit: 100,                             comment: "??? ?? FK"
+    t.integer  "approval_log_id",    limit: nil,                             comment: "???? FK"
+    t.integer  "limit_log_id",       limit: nil,                             comment: "?? FK"
+    t.integer  "store_id",           limit: nil,                             comment: "???"
+    t.integer  "store_limit_mst_id", limit: nil
+    t.integer  "store_card_id",      limit: nil,                             comment: "??? FK"
+    t.string   "card_no",            limit: 16,                              comment: "????"
+    t.string   "status_cd",          limit: 20,                              comment: "????"
+    t.integer  "amt",                            precision: 38,              comment: "??/??/?? ??"
+    t.integer  "balance",                        precision: 38,              comment: "??"
+    t.datetime "created_at",                                    null: false
+    t.datetime "updated_at",                                    null: false
   end
 
-  create_table "store_limit_msts", comment: "카드 한도 사용 내역", force: :cascade do |t|
-    t.string   "ymd",           limit: 8,                               comment: "년월일"
-    t.integer  "seq",                       precision: 38,              comment: "순번"
-    t.string   "business_no",                                           comment: "사업자등록번호"
-    t.integer  "store_id",      limit: nil,                             comment: "가맹점"
-    t.integer  "store_card_id", limit: nil,                null: false, comment: "사용자 FK"
-    t.string   "card_no",       limit: 16,                 null: false, comment: "카드번호"
-    t.integer  "save",                      precision: 38,              comment: "총 적립 금액"
-    t.integer  "used",                      precision: 38,              comment: "총 사용 금액"
-    t.integer  "withdraw",                  precision: 38,              comment: "총 출금 금액"
-    t.integer  "balance",                   precision: 38,              comment: "잔액"
-    t.string   "st_key",                                                comment: "업데이트 체크 키"
+  add_index "store_limit_dets", ["business_no"], name: "store_limit_dets_idx_06"
+  add_index "store_limit_dets", ["card_no"], name: "store_limit_dets_idx_04"
+  add_index "store_limit_dets", ["status_cd"], name: "store_limit_dets_idx_05"
+  add_index "store_limit_dets", ["store_card_id"], name: "store_limit_dets_idx_03"
+  add_index "store_limit_dets", ["store_id"], name: "store_limit_msts_idx_07"
+  add_index "store_limit_dets", ["store_limit_mst_id"], name: "store_limit_dets_idx_02"
+  add_index "store_limit_dets", ["user_seq"], name: "store_limit_msts_idx_08"
+  add_index "store_limit_dets", ["ymd", "seq"], name: "store_limit_dets_idx_01", unique: true
+
+  create_table "store_limit_msts", comment: "?? ?? ?? ??", force: :cascade do |t|
+    t.string   "ymd",           limit: 8,                               comment: "???"
+    t.integer  "seq",                       precision: 38,              comment: "??"
+    t.string   "business_no",                                           comment: "???????"
+    t.integer  "store_id",      limit: nil,                             comment: "???"
+    t.integer  "store_card_id", limit: nil,                null: false, comment: "??? FK"
+    t.string   "card_no",       limit: 16,                 null: false, comment: "????"
+    t.integer  "save",                      precision: 38,              comment: "? ?? ??"
+    t.integer  "used",                      precision: 38,              comment: "? ?? ??"
+    t.integer  "withdraw",                  precision: 38,              comment: "? ?? ??"
+    t.integer  "balance",                   precision: 38,              comment: "??"
+    t.string   "st_key",                                                comment: "???? ?? ?"
     t.datetime "created_at",                               null: false
     t.datetime "updated_at",                               null: false
   end
@@ -210,33 +355,9 @@ ActiveRecord::Schema.define(version: 20160825105403) do
   add_index "store_limit_msts", ["store_id"], name: "store_limit_msts_idx_05"
   add_index "store_limit_msts", ["ymd", "seq"], name: "store_limit_msts_idx_01", unique: true
 
-  create_table "store_limt_dets", comment: "카드 한도 사용 내역", force: :cascade do |t|
-    t.string   "ymd",                limit: 8,                               comment: "년월일"
-    t.integer  "seq",                            precision: 38,              comment: "순번"
-    t.string   "business_no",                                                comment: "사업자등록번호"
-    t.integer  "approval_log_id",    limit: nil,                             comment: "통신로그 FK"
-    t.integer  "store_id",           limit: nil,                             comment: "가맹점"
-    t.integer  "store_limit_mst_id", limit: nil
-    t.integer  "store_card_id",      limit: nil,                             comment: "사용자 FK"
-    t.string   "card_no",            limit: 16,                              comment: "카드번호"
-    t.string   "status_cd",          limit: 20,                              comment: "상태코드"
-    t.integer  "amt",                            precision: 38,              comment: "적립/사용/출금 금액"
-    t.integer  "balance",                        precision: 38,              comment: "잔액"
-    t.datetime "created_at",                                    null: false
-    t.datetime "updated_at",                                    null: false
-  end
-
-  add_index "store_limt_dets", ["business_no"], name: "store_limt_dets_idx_06"
-  add_index "store_limt_dets", ["card_no"], name: "store_limt_dets_idx_04"
-  add_index "store_limt_dets", ["status_cd"], name: "store_limt_dets_idx_05"
-  add_index "store_limt_dets", ["store_card_id"], name: "store_limt_dets_idx_03"
-  add_index "store_limt_dets", ["store_id"], name: "store_limit_msts_idx_07"
-  add_index "store_limt_dets", ["store_limit_mst_id"], name: "store_limt_dets_idx_02"
-  add_index "store_limt_dets", ["ymd", "seq"], name: "store_limt_dets_idx_01", unique: true
-
-  create_table "store_users", comment: "가맹점 회원", force: :cascade do |t|
-    t.string   "ymd",        limit: 8,                               comment: "년월일"
-    t.integer  "seq",                    precision: 38,              comment: "순번"
+  create_table "store_users", comment: "??? ??", force: :cascade do |t|
+    t.string   "ymd",        limit: 8,                               comment: "???"
+    t.integer  "seq",                    precision: 38,              comment: "??"
     t.integer  "user_id",    limit: nil
     t.integer  "store_id",   limit: nil
     t.datetime "created_at",                            null: false
@@ -249,29 +370,32 @@ ActiveRecord::Schema.define(version: 20160825105403) do
 
   add_primary_key_trigger "store_users"
 
-  create_table "stores", comment: "가맹점", force: :cascade do |t|
-    t.integer  "parent_id",   limit: nil,                                               comment: "상위 ID"
-    t.string   "ymd",         limit: 8,                                                 comment: "년월일"
-    t.integer  "seq",                     precision: 38,                                comment: "순번"
-    t.string   "store_name",  limit: 100,                                               comment: "가맹점 정보"
-    t.string   "business_no", limit: 10,                                                comment: "사업자등록번호"
-    t.string   "phone_no",    limit: 20,                                                comment: "전화번호"
-    t.string   "email",                                                                 comment: "이메일주소\n"
-    t.string   "ceo_name",    limit: 100,                                               comment: "대표자명"
-    t.string   "zone_code",   limit: 5,                                                 comment: "우편번호"
-    t.string   "addr1",       limit: 150,                                               comment: "주소"
-    t.string   "addr2",       limit: 100,                                               comment: "상세주소"
-    t.float    "lat",                                                                   comment: "위도"
-    t.float    "lng",                                                                   comment: "경도"
-    t.integer  "created_id",  limit: nil,                                               comment: "생성자"
-    t.integer  "updated_id",  limit: nil,                                               comment: "수정자"
-    t.integer  "deleted_id",  limit: nil,                                               comment: "삭제자"
-    t.integer  "manager_id",  limit: nil,                                               comment: "담당자"
-    t.string   "status_cd",   limit: 20,                 default: "SS001",              comment: "상태코드"
-    t.boolean  "deleted_yn",  limit: nil,                default: false,                comment: "삭제여부"
-    t.datetime "created_at",                                               null: false, comment: "수정 삭제일"
-    t.datetime "updated_at",                                               null: false, comment: "수정 삭제일"
-    t.datetime "deleted_at",                                                            comment: "삭제일"
+  create_table "stores", comment: "???", force: :cascade do |t|
+    t.integer  "parent_id",   limit: nil,                                               comment: "?? ID"
+    t.string   "ymd",         limit: 8,                                                 comment: "???"
+    t.integer  "seq",                     precision: 38,                                comment: "??"
+    t.string   "store_name",  limit: 100,                                               comment: "??? ??"
+    t.string   "business_no", limit: 10,                                                comment: "???????"
+    t.string   "phone_no",    limit: 20,                                                comment: "????"
+    t.string   "email",                                                                 comment: "?????\n"
+    t.string   "ceo_name",    limit: 100,                                               comment: "????"
+    t.string   "zone_code",   limit: 5,                                                 comment: "????"
+    t.string   "addr1",       limit: 150,                                               comment: "??"
+    t.string   "addr2",       limit: 100,                                               comment: "????"
+    t.float    "lat",                                                                   comment: "??"
+    t.float    "lng",                                                                   comment: "??"
+    t.integer  "created_id",  limit: nil,                                               comment: "???"
+    t.integer  "updated_id",  limit: nil,                                               comment: "???"
+    t.integer  "deleted_id",  limit: nil,                                               comment: "???"
+    t.integer  "manager_id",  limit: nil,                                               comment: "???"
+    t.string   "status_cd",   limit: 20,                 default: "SS001",              comment: "????"
+    t.boolean  "deleted_yn",  limit: nil,                default: false,                comment: "????"
+    t.datetime "created_at",                                               null: false, comment: "?? ???"
+    t.datetime "updated_at",                                               null: false, comment: "?? ???"
+    t.datetime "deleted_at",                                                            comment: "???"
+    t.datetime "sync_at",                                                               comment: "?????"
+    t.boolean  "sync_yn",     limit: nil,                default: true,                 comment: "??? ?? ??\n"
+    t.datetime "send_at"
   end
 
   add_index "stores", ["business_no"], name: "stores_idx_04", unique: true
@@ -281,48 +405,34 @@ ActiveRecord::Schema.define(version: 20160825105403) do
   add_index "stores", ["parent_id"], name: "stores_idx_08"
   add_index "stores", ["status_cd"], name: "stores_idx_02"
   add_index "stores", ["store_name"], name: "stores_idx_03"
+  add_index "stores", ["sync_at"], name: "stores_idx_10"
+  add_index "stores", ["sync_yn", "send_at"], name: "stores_idx_11"
   add_index "stores", ["updated_id"], name: "stores_idx_06"
   add_index "stores", ["ymd", "seq"], name: "stores_idx_01", unique: true
 
   add_primary_key_trigger "stores"
 
-  create_table "temp_store_limit_msts", comment: "카드 한도 사용 내역", id: false, force: :cascade do |t|
-    t.integer  "id",            limit: nil,                null: false, comment: "고유키"
-    t.string   "ymd",           limit: 8,                               comment: "년월일"
-    t.integer  "seq",                       precision: 38,              comment: "순번"
-    t.string   "business_no",                                           comment: "사업자등록번호"
-    t.integer  "store_id",      limit: nil,                             comment: "가맹점"
-    t.integer  "store_card_id", limit: nil,                null: false, comment: "사용자 FK"
-    t.string   "card_no",       limit: 16,                 null: false, comment: "카드번호"
-    t.integer  "save",                      precision: 38,              comment: "총 적립 금액"
-    t.integer  "used",                      precision: 38,              comment: "총 사용 금액"
-    t.integer  "withdraw",                  precision: 38,              comment: "총 출금 금액"
-    t.integer  "balance",                   precision: 38,              comment: "잔액"
-    t.datetime "created_at",                               null: false
-    t.datetime "updated_at",                               null: false
-  end
-
   create_table "user_authorities", force: :cascade do |t|
-    t.string   "ymd",          limit: 8,                                               comment: "년월일"
-    t.integer  "seq",                      precision: 38,                              comment: "순번"
+    t.string   "ymd",          limit: 8,                                               comment: "???"
+    t.integer  "seq",                      precision: 38,                              comment: "??"
     t.integer  "user_id",      limit: nil,                                             comment: "USER FK"
     t.integer  "authority_id", limit: nil,                                             comment: "AUTHORITY FK"
-    t.boolean  "deleted_yn",   limit: nil,                default: false,              comment: "삭제여부"
+    t.boolean  "deleted_yn",   limit: nil,                default: false,              comment: "????"
     t.datetime "created_at",                                              null: false
     t.datetime "updated_at",                                              null: false
   end
 
   add_primary_key_trigger "user_authorities"
 
-  create_table "users", comment: "회원 테이블", force: :cascade do |t|
-    t.string   "ymd",                    limit: 8,                                            comment: "년월일"
-    t.integer  "seq",                                precision: 38,                           comment: "순번"
-    t.string   "login",                  limit: 50,                              null: false, comment: "login아이디"
-    t.string   "email",                                             default: "", null: false, comment: "이메일주소"
-    t.string   "encrypted_password",                                default: "", null: false, comment: "암호화된 비밀번호"
-    t.string   "phone_no",               limit: 20,                              null: false, comment: "연락처"
-    t.string   "username",               limit: 100,                             null: false, comment: "이름"
-    t.string   "nickname",               limit: 100,                                          comment: "닉네임"
+  create_table "users", comment: "?? ???", force: :cascade do |t|
+    t.string   "ymd",                    limit: 8,                                            comment: "???"
+    t.integer  "seq",                                precision: 38,                           comment: "??"
+    t.string   "login",                  limit: 50,                              null: false, comment: "login???"
+    t.string   "email",                                             default: "", null: false, comment: "?????"
+    t.string   "encrypted_password",                                default: "", null: false, comment: "???? ????"
+    t.string   "phone_no",               limit: 20,                              null: false, comment: "???"
+    t.string   "username",               limit: 100,                             null: false, comment: "??"
+    t.string   "nickname",               limit: 100,                                          comment: "???"
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
@@ -338,9 +448,9 @@ ActiveRecord::Schema.define(version: 20160825105403) do
     t.integer  "failed_attempts",                    precision: 38, default: 0,  null: false
     t.string   "unlock_token"
     t.datetime "locked_at"
-    t.string   "status_cd",              limit: 20,                                           comment: "회원 상태 코드"
-    t.integer  "created_id",             limit: nil,                                          comment: "생성자"
-    t.integer  "updated_id",             limit: nil,                                          comment: "수정자"
+    t.string   "status_cd",              limit: 20,                                           comment: "?? ?? ??"
+    t.integer  "created_id",             limit: nil,                                          comment: "???"
+    t.integer  "updated_id",             limit: nil,                                          comment: "???"
     t.datetime "created_at",                                                     null: false
     t.datetime "updated_at",                                                     null: false
   end

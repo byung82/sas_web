@@ -10,6 +10,13 @@ Rails.application.routes.draw do
         resources :charges, only: [:create]
         resources :cards, only: [:show, :update]
         resources :usages, only: [:index]
+
+        namespace :manager do
+          resources :stores do
+            resources :usages
+            resources :cards
+          end
+        end
       end
     end
   end

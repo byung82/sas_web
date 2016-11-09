@@ -120,6 +120,9 @@ GEM
     jsonapi (0.1.1.beta2)
       json (~> 1.8)
     jwt (1.5.4)
+    kaminari (0.17.0)
+      actionpack (>= 3.0.0)
+      activesupport (>= 3.0.0)
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
     mail (2.6.4)
@@ -148,6 +151,7 @@ GEM
     pkg-config (1.1.7)
     puma (3.6.0)
     rack (1.6.4)
+    rack-cors (0.4.0)
     rack-test (0.6.3)
       rack (>= 1.0)
     rails (4.2.7)
@@ -245,8 +249,10 @@ DEPENDENCIES
   foreman
   jbuilder (~> 2.0)
   jquery-rails
+  kaminari
   oauth2
   puma
+  rack-cors
   rails (= 4.2.7)
   ruby-oci8
   ruby-plsql
@@ -258,4 +264,4 @@ DEPENDENCIES
   web-console (~> 2.0)
 
 BUNDLED WITH
-   1.12.5
+   1.13.1

@@ -22,6 +22,8 @@ class CreateStoreCards < ActiveRecord::Migration
 
       t.integer :limit_amt, comment: '한도'
 
+      t.integer :sync_amt, comment: '연동 한도'
+
       t.boolean :lost_yn, default: 'N', comment: '분실여부'
 
       t.timestamps null: false

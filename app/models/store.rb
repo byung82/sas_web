@@ -18,11 +18,13 @@ class Store < ActiveRecord::Base
   # 카드한도 마스터
   has_many :store_limit_msts
   # 카드한도 상세
-  has_many :store_limt_dets
+  has_many :store_limit_dets
 
   belongs_to :parent, class_name: 'Store', foreign_key: 'parent_id'
 
   has_many   :children,  foreign_key: :parent_id,  class_name:'Store'
+
+  validates_presence_of :business_no, :store_name, :ceo_name, :zone_code, :addr1, :phone_no
 
   private
   def process_lvl

@@ -138,20 +138,20 @@ Doorkeeper::JWT.configure do
   token_payload do |opts|
     user = User.find(opts[:resource_owner_id])
 
-
-    Rails.logger.debug user.authorities.to_json
+    roles = user.authorities.map{|f| {code: f.code, explan: f.explan}}
 
     {
-        iss: 'sas',
-        iat: DateTime.current.utc.to_i,
-        jti: SecureRandom.uuid,
+      iss: 'sas',
+      iat: DateTime.current.utc.to_i,
+      jti: SecureRandom.uuid,
 
-        user: {
-            id: user.id,
-            login: user.login,
-            email: user.email,
-            authority: user.user_authorities.map(&:code)
-        }
+      user: {
+        id: user.id,
+        login: user.login,
+        email: user.email,
+        username: user.username,
+        role: roles
+      }
     }
 
     # secret_key '1234567890'

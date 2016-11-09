@@ -81,14 +81,31 @@ WHERE 1 = a.ORDER_NO(+)
 AND b.BUSINESS_NO = a.BUSINESS_NO(+)
       SQL
 
+#       sql = <<-SQL
+# SELECT
+#   BUSINESS_NO
+# FROM STORES
+# WHERE SEND_AT IN
+# (
+#   SELECT
+#     MIN(SEND_AT)
+#   FROM STORES
+#   WHERE SYNC_YN = 'Y'
+# )
+# AND ROWNUM=1
+#       SQL
 
       business_nos = LimitRequest.connection.select_all(sql)
 
       business_nos.each do |business_no|
 
+        plsql.store_card_pkg.update_store_card(business_no['business_no'])
+
+        p "EXECUTE PLSQL : #{business_no['business_no']}"
+
         sql = <<-SQL
 SELECT
-  A.BUSINESS_NO, A.CARD_NO, DECODE(NVL(B.SEND_YN, 'Y'), 'Y', A.LIMIT_AMT, A.LIMIT_AMT + B.AMT) AMT
+  A.BUSINESS_NO, A.CARD_NO, DECODE(NVL(B.SEND_YN, 'Y'), 'Y', A.SYNC_AMT, A.SYNC_AMT + B.AMT) AMT
 FROM STORE_CARDS A, LIMIT_REQUESTS B
 WHERE A.CARD_NO = B.CARD_NO(+)
 AND A.BUSINESS_NO = '#{business_no['business_no']}'
@@ -317,7 +334,7 @@ AND A.BUSINESS_NO = '#{business_no['business_no']}'
         else
           item = @queue.first.first
 
-          header = { :business_no => item.bzr_no.to_s, page_no: 0 }
+          header = { :business_no => item, page_no: 0 }
 
           Rails.logger.debug "SAS.SEND : #{header}"
 

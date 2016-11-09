@@ -25,6 +25,7 @@ development:
   <<: *default
   adapter: oracle_enhanced
   database: //sas-dev-01.db.kminlove.com:1521/sas_dev.db.kminlove.com
+#  database: //211.110.141.206:1521/sas_prod
 #  password: <%= ENV["MGM_WEB_DATABASE_PASSWORD"] %>
 
 test:
