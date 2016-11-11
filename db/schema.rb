@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161109083255) do
+ActiveRecord::Schema.define(version: 20161111070227) do
 
   create_table "approval_logs", force: :cascade do |t|
     t.string   "ymd",          limit: 8,                                                comment: "년월일"
@@ -238,12 +238,16 @@ ActiveRecord::Schema.define(version: 20161109083255) do
     t.integer  "updated_id",    limit: nil
     t.datetime "created_at",                                               null: false
     t.datetime "updated_at",                                               null: false
+    t.string   "seq_no",        limit: 50,                                              comment: "고유번호"
+    t.boolean  "deposit_yn",    limit: nil,                default: true,               comment: "입금여부"
   end
 
   add_index "limit_requests", ["business_no"], name: "limit_requests_idx_04"
   add_index "limit_requests", ["created_id"], name: "limit_requests_idx_05"
+  add_index "limit_requests", ["deposit_yn"], name: "limit_requests_idx_10"
   add_index "limit_requests", ["error_yn"], name: "limit_requests_idx_03"
   add_index "limit_requests", ["send_yn"], name: "limit_requests_idx_02"
+  add_index "limit_requests", ["seq_no"], name: "limit_requests_idx_09"
   add_index "limit_requests", ["store_card_id"], name: "limit_requests_idx_08"
   add_index "limit_requests", ["store_id"], name: "limit_requests_idx_07"
   add_index "limit_requests", ["updated_id"], name: "limit_requests_idx_06"

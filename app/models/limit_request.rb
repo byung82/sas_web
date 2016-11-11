@@ -14,8 +14,6 @@ class LimitRequest < ActiveRecord::Base
 
   set_update_method do
 
-
-
     plsql.log_pkg.update_limit_requests(
         i_id: self.id,
         i_limit_log_id: self.limit_log_id,

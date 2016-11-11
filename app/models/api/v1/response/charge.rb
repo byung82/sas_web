@@ -22,7 +22,7 @@ module Api
           charge.card_limit = item.store_card.limit_amt + item.amt
           charge.amt = item.amt
           charge.tid = item.id
-          charge.user_seq = item.store_card.user_seq
+          charge.seq_no = item.seq_no
 
           charge
         end

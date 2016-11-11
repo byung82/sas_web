@@ -10,6 +10,7 @@ Rails.application.routes.draw do
         resources :charges, only: [:create]
         resources :cards, only: [:show, :update]
         resources :usages, only: [:index]
+        resources :deposits, only: [:create]
 
         namespace :manager do
           resources :stores do
