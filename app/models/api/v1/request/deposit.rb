@@ -11,7 +11,7 @@ module Api
 
         validates_presence_of :business_no, :tid
 
-        validate :check_business_no, :check_card_no
+        validate :check_business_no
 
         def initialize(attributes = {})
           attributes.each do |name, value|

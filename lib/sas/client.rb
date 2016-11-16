@@ -96,12 +96,18 @@ SELECT
   B.BUSINESS_NO, B.CARD_NO, B.AMT
 FROM LIMIT_REQUESTS B
 WHERE BUSINESS_NO = '#{business_no['business_no']}'
-AND SEND_YN = 'N' OR ERROR_YN = 'Y'
+AND (SEND_YN = 'N' OR ERROR_YN = 'Y') 
+AND DEPOSIT_YN = 'Y' 
+
         SQL
 
         queue = Array.new
 
         items = LimitRequest.connection.select_all(sql)
+
+        if items.count == 0
+          next
+        end
 
         max_page = (items.count.to_f / 250).ceil
 
