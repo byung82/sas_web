@@ -13,6 +13,8 @@ module Api
 
         raise StandardError, '해당하는 카드충전내역이 없습니다' if !@item.present?
 
+        plsql.limit_req_pkg.update_deposit_yn(item.tid, 'Y')
+
         render json: {
             success: true,
             message: ''
