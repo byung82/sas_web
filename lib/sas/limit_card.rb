@@ -34,7 +34,17 @@ module Sas
     end
 
     def post_init
-      Rails.logger.debug '새로운접속'
+      # Rails.logger.debug '카드 한도 조회 새로운접속'
+      # p '카드 한도 조회 새로운접속'
+
+      hour = Time.now.localtime.hour
+
+      Rails.logger.debug "카드 한도 조회 새로운접속 : #{hour}시간"
+      p "카드 한도 조회 새로운접속 : #{hour}시간"
+
+      if hour < 18 && hour > 9
+        return
+      end
 
       is_first = false
 

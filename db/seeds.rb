@@ -28,9 +28,12 @@ client = OAuth2::Client.new('e07aa0da3969f26d96c968f7a696b6ca234ff7fa9ca5d79e604
 
 token = client.password.get_token('humoney', 'humoney00!@#', params: {grant_type: 'password'})
 
-response = token.put('/api/v1/cards/6818100394,9410852258686100',
-                     params:{phone_no: '01058792200',
-                             user_seq: '1'} )
+response = token.post('/api/v1/charges',
+                     params:{card_no: '9410852258709300',
+                             business_no: '6818100394',
+                             amt: 500000,
+                             seq_no: '2016111700010'
+                     } )
 
 
 p response.parsed
