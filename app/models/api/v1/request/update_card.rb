@@ -26,7 +26,7 @@ module Api
 
         def check_card_no
           store_card = StoreCard.find_by(card_no: self.card_no)
-          errors.add(:card_no, '카드본호가 존재하지 않습니다') if !store_card.present?
+          errors.add(:card_no, '카드번호가 존재하지 않습니다') if !store_card.present?
           errors.add(:card_no, '이미 등록한 카드 입니다') if store_card.present? && store_card.user_seq.present?
         end
 

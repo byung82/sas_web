@@ -7,7 +7,7 @@ module Api
         include ActionView::Helpers::NumberHelper
         extend ActiveModel::Naming
 
-        attr_accessor :success, :tid, :card_limit, :amt, :user_seq
+        attr_accessor :success, :tid, :card_limit, :amt, :seq_no
 
         def initialize(attributes = {})
           attributes.each do |name, value|
