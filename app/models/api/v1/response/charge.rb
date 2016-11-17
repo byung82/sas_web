@@ -19,8 +19,8 @@ module Api
           charge = Charge.new
 
           charge.success = true
-          charge.card_limit = item.store_card.limit_amt + item.amt
-          charge.amt = item.amt
+          charge.card_limit = item.amt
+          charge.amt = item.amt - item.store_card.limit_amt
           charge.tid = item.id
           charge.seq_no = item.seq_no
 
