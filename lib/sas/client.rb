@@ -286,7 +286,9 @@ AND DEPOSIT_YN = 'Y'
 
 
       limit.items.each do |item|
-        request = LimitRequest.find_by(card_no: item.card_no.to_s)
+        request = LimitRequest.where(card_no: item.card_no.to_s).
+            where(deposit_yn: true).
+            where('SEND_YN = ? or ERROR_YN = ?', 'N', 'Y').last
 
         if !request.present?
           next
