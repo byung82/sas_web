@@ -22,19 +22,19 @@ module Sas
       # 가맹점번호
       string :mrc_no, length: 12, pad_byte: ' '
       # 가맹점명
-      string :mrc_nm, length: 50, pad_byte: ' '
+      euckr_string :mrc_nm, length: 50, pad_byte: ' '
       # 사업자번호
       string :bzr_no, length: 10, pad_byte: ' '
       # 가맹점대표자명
-      string :mrc_dlgps_nm, length: 12, pad_byte: ' '
+      euckr_string :mrc_dlgps_nm, length: 12, pad_byte: ' '
       # 가맹점전화번호
       string :mrc_tno, length: 16, pad_byte: ' '
       # 가맹점우편번호
       string :mrc_zip, length: 6, pad_byte: ' '
       # 가맹점주소
-      string :mrc_adr, length: 70, pad_byte: ' '
+      euckr_string :mrc_adr, length: 70, pad_byte: ' '
       # 가맹점상세주소
-      string :mrc_dtl_adr,length: 70, pad_byte: ' '
+      euckr_string :mrc_dtl_adr,length: 70, pad_byte: ' '
       # 예비2
       string :pprn2, length: 16, pad_byte: ' '
     end
