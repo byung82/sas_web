@@ -77,5 +77,5 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  config.card.path = '~/sas'
+  config.card.path = '/srv/ftp/sas/'
 end

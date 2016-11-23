@@ -14,10 +14,13 @@ module Api
 
         raise ActiveRecord::RecordInvalid, item if !item.valid?
 
-        store = current_user.stores.find_by(business_no: item.business_no)
+        #store = current_user.stores.find_by(business_no: item.business_no)
 
-        store_card = store.store_cards.find_by(card_no: item.card_no)
+        store_card = StoreCard.find_by(card_no: item.card_no);
 
+        store = store_card.store
+
+        #store_card = store.store_cards.find_by(card_no: item.card_no)
 
         LimitRequest.transaction do
 
@@ -26,7 +29,7 @@ module Api
 
           if @item.new_record?
             @item.card_no = item.card_no
-            @item.amt = store_card.sync_amt + item.amt.to_i
+            @item.amt = (store_card.sync_amt||0) + item.amt.to_i
             @item.type_cd = 'CT004'
             @item.limit_cd = 'CL001'
             @item.store = store

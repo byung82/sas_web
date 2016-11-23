@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161111070227) do
+ActiveRecord::Schema.define(version: 20161122073951) do
 
   create_table "approval_logs", force: :cascade do |t|
     t.string   "ymd",          limit: 8,                                                comment: "년월일"
@@ -43,9 +43,11 @@ ActiveRecord::Schema.define(version: 20161111070227) do
     t.string   "pprn2",        limit: 16,                                               comment: "예비2"
     t.datetime "created_at",                                               null: false
     t.datetime "updated_at",                                               null: false
+    t.string   "sync_ymd",     limit: 10,                                               comment: "카드 동기화 예정일"
   end
 
   add_index "approval_logs", ["card_no"], name: "approval_logs_idx_03"
+  add_index "approval_logs", ["sync_ymd"], name: "approval_logs_idx_04"
   add_index "approval_logs", ["type_cd"], name: "approval_logs_idx_02"
   add_index "approval_logs", ["ymd", "seq"], name: "approval_logs_idx_01", unique: true
 
@@ -157,6 +159,18 @@ ActiveRecord::Schema.define(version: 20161111070227) do
   end
 
   add_primary_key_trigger "error_tracks"
+
+  create_table "holidays", force: :cascade do |t|
+    t.string   "ymd",         limit: 8,                                comment: "년월일"
+    t.string   "description",                                          comment: "설명"
+    t.boolean  "deleted_yn",  limit: nil, default: false,              comment: "삭제여부 Y: 삭제 N: 미삭제"
+    t.integer  "created_id",  limit: nil,                              comment: "생성자"
+    t.integer  "updated_id",  limit: nil,                              comment: "수정자"
+    t.integer  "deleted_id",  limit: nil,                              comment: "삭제자"
+    t.datetime "created_at",                              null: false, comment: "생성일"
+    t.datetime "updated_at",                              null: false, comment: "수정일"
+    t.datetime "deleted_at",                                           comment: "삭제일"
+  end
 
   create_table "levels", comment: "레벨 TREE 구조", force: :cascade do |t|
     t.string   "ymd",            limit: 8,                   comment: "년월일"
