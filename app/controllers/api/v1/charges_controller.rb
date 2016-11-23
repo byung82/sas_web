@@ -24,7 +24,7 @@ module Api
 
         LimitRequest.transaction do
 
-          @item = LimitRequest.find_or_initialize_by(business_no: item.business_no,
+          @item = LimitRequest.find_or_initialize_by(business_no: store_card.business_no,
                                                      seq_no: item.seq_no)
 
           if @item.new_record?
