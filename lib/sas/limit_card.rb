@@ -42,7 +42,7 @@ module Sas
       Rails.logger.debug "카드 한도 조회 새로운접속 : #{hour}시간"
       p "카드 한도 조회 새로운접속 : #{hour}시간"
 
-      if hour < 18 && hour > 9
+      if hour < 20 && hour > 9
         return
       end
 
@@ -78,6 +78,7 @@ WHERE LIMIT_AMT - SYNC_AMT != 0
         limit.hdr_c = (len-4).to_s.rjust(4, '0')
 
         @queue[card_no] = limit
+
 
 
         LimitCardLog.create(

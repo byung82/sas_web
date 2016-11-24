@@ -16,7 +16,7 @@ module Api
 
         #store = current_user.stores.find_by(business_no: item.business_no)
 
-        store_card = StoreCard.find_by(card_no: item.card_no);
+        store_card = StoreCard.find_by(card_no: item.card_no)
 
         store = store_card.store
 
@@ -26,7 +26,6 @@ module Api
 
           @item = LimitRequest.find_or_initialize_by(business_no: store_card.business_no,
                                                      seq_no: item.seq_no)
-
           if @item.new_record?
             @item.card_no = item.card_no
             @item.amt = (store_card.sync_amt||0) + item.amt.to_i
