@@ -211,10 +211,10 @@ WHERE LIMIT_AMT - SYNC_AMT != 0
         Rails.logger.debug '전송완료'
         close_connection_after_writing
       else
-        item = @queue.first
-        Rails.logger.debug "CARD_SYNC.SEND : #{header}"
+        item = @queue.keys.first
+        Rails.logger.debug "CARD_SYNC.SEND : #{item}"
 
-        @redis.publish('CARD_SYNC.SEND', item.card_no)
+        @redis.publish('CARD_SYNC.SEND', item)
       end
     end
 

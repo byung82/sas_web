@@ -11,6 +11,7 @@ Rails.application.routes.draw do
         resources :cards, only: [:show, :update]
         resources :usages, only: [:index]
         resources :deposits, only: [:create]
+        resources :vbanks, only: [:create]
 
         namespace :manager do
           resources :stores do
