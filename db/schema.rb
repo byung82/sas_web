@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161122073951) do
+ActiveRecord::Schema.define(version: 20161126145026) do
 
   create_table "approval_logs", force: :cascade do |t|
     t.string   "ymd",          limit: 8,                                                comment: "년월일"
@@ -254,6 +254,7 @@ ActiveRecord::Schema.define(version: 20161122073951) do
     t.datetime "updated_at",                                               null: false
     t.string   "seq_no",        limit: 50,                                              comment: "고유번호"
     t.boolean  "deposit_yn",    limit: nil,                default: true,               comment: "입금여부"
+    t.integer  "save_amt",                  precision: 38, default: 0,                  comment: "적립 요청 금액"
   end
 
   add_index "limit_requests", ["business_no"], name: "limit_requests_idx_04"

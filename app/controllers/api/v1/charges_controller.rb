@@ -29,6 +29,7 @@ module Api
           if @item.new_record?
             @item.card_no = item.card_no
             @item.amt = (store_card.sync_amt||0) + item.amt.to_i
+            @item.save_amt = item.amt.to_i
             @item.type_cd = 'CT004'
             @item.limit_cd = 'CL001'
             @item.store = store
