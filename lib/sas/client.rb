@@ -93,12 +93,12 @@ FROM STORES WHERE SYNC_YN='Y'
 
         sql = <<-SQL
 SELECT
-  B.BUSINESS_NO, B.CARD_NO, B.AMT
-FROM LIMIT_REQUESTS B
-WHERE BUSINESS_NO = '#{business_no['business_no']}'
-AND (SEND_YN = 'N' OR ERROR_YN = 'Y') 
-AND DEPOSIT_YN = 'Y' 
-
+  B.BUSINESS_NO, B.CARD_NO, NVL(A.SYNC_AMT, 0) + NVL(B.SAVE_AMT,0) AMT
+FROM LIMIT_REQUESTS B, STORE_CARDS A
+WHERE A.CARD_NO = B.CARD_NO
+AND B.BUSINESS_NO = '#{business_no['business_no']}'
+AND (B.SEND_YN = 'N' OR B.ERROR_YN = 'Y') 
+AND B.DEPOSIT_YN = 'Y'
         SQL
 
         queue = Array.new
