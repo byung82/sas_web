@@ -157,6 +157,7 @@ GEM
     orm_adapter (0.5.0)
     puma (3.6.0)
     rack (1.6.4)
+    rack-cors (0.4.0)
     rack-test (0.6.3)
       rack (>= 1.0)
     rails (4.2.7)
@@ -264,6 +265,7 @@ DEPENDENCIES
   kaminari
   oauth2
   puma
+  rack-cors
   rails (= 4.2.7)
   rest-client
   ruby-oci8
