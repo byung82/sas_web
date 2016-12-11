@@ -91,6 +91,8 @@ GEM
       railties (>= 4.1.0, < 5.1)
       responders
       warden (~> 1.2.3)
+    domain_name (0.5.20160826)
+      unf (>= 0.0.5, < 1.0.0)
     doorkeeper (4.2.0)
       railties (>= 4.2)
     doorkeeper-jwt (0.1.7)
@@ -108,6 +110,8 @@ GEM
     globalid (0.3.7)
       activesupport (>= 4.1.0)
     hiredis (0.6.1)
+    http-cookie (1.0.2)
+      domain_name (~> 0.5)
     i18n (0.7.0)
     jbuilder (2.6.0)
       activesupport (>= 3.0.0, < 5.1)
@@ -141,6 +145,7 @@ GEM
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (3.2.0)
+    netrc (0.11.0)
     nokogiri (1.6.8.1)
       mini_portile2 (~> 2.1.0)
     oauth2 (1.2.0)
@@ -152,7 +157,6 @@ GEM
     orm_adapter (0.5.0)
     puma (3.6.0)
     rack (1.6.4)
-    rack-cors (0.4.0)
     rack-test (0.6.3)
       rack (>= 1.0)
     rails (4.2.7)
@@ -183,6 +187,10 @@ GEM
     rdoc (4.3.0)
     responders (2.3.0)
       railties (>= 4.2.0, < 5.1)
+    rest-client (2.0.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
     ruby-oci8 (2.2.2)
     ruby-plsql (0.6.0)
     sass (3.4.22)
@@ -217,6 +225,9 @@ GEM
       thread_safe (~> 0.1)
     uglifier (3.0.3)
       execjs (>= 0.3.0, < 3)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.7.2)
     warden (1.2.6)
       rack (>= 1.0)
     web-console (2.3.0)
@@ -253,8 +264,8 @@ DEPENDENCIES
   kaminari
   oauth2
   puma
-  rack-cors
   rails (= 4.2.7)
+  rest-client
   ruby-oci8
   ruby-plsql
   sass-rails (~> 5.0)

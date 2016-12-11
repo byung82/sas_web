@@ -17,6 +17,7 @@ Rails.application.routes.draw do
           resources :stores do
             resources :usages
             resources :cards
+            resources :charges
           end
         end
       end

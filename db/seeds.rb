@@ -21,6 +21,79 @@
 #
 
 
+#  https://vbank.kminlove.com/bank.jsp
+
+
+req_data = {
+    'JobCode': 'V',
+    'CompCode': '0006',
+    'CompName': '국민사랑정산',
+    'CustName': '국민사랑',
+    'CustID': '00001',
+    'MaxAmount': '',
+    'ExpDate': '',
+    'SecureCode': '0000',
+    'FixedAmountYN': 'N'
+}.to_json.encode('EUC-KR', 'UTF-8')
+
+
+req_data = {
+    'JobCode': 'B',
+    'CompCode': '0006',
+    'SecureCode': '0000'
+}.to_json.encode('EUC-KR', 'UTF-8')
+
+req_data = {
+    'JobCode': 'W',
+    'CompCode': '0006',
+    'SecureCode': '0000',
+    'DestBankCode': '023',
+    'DestAccountNo': '35820117593',
+    'Amount': '100',
+    'Remark': '출금테스트'
+}.to_json.encode('EUC-KR', 'UTF-8')
+
+#
+# 변수 REQDATA의 변수값 예
+# {"JobCode":"W", "CompCode":"0000", "DestBankCode":"023", "DestAccountNo":"123456789012", "Amount":"1000", "Remark":"적요내용", "SecureCode":"0000"}
+#
+# JobCode: 출금 업무코드 ("W")
+# CompCode:
+# 업체코드
+# DestBankCode: 출금 상대 은행 코드 (SC제일은행:"023")
+# DestAccountNo: 출금 상대 계좌번호
+# Amount: 출금액
+# Remark: 적요
+# SecureCode: 업체코드, DestBankCode, DestAccountNo, Amount 등을 조합하여 산출한 보안번호 (임시 보안번호:"0000")
+
+# response = RestClient.post 'https://vbank.kminlove.com/banking.jsp',
+#                            {
+#                                'REQDATA': req_data
+#                            }
+# response = response.encode('UTF-8', 'EUC-KR')
+#
+# response = JSON.parse(response)
+#
+# p response
+
+
+# s = Store.find_or_initialize_by(business_no: '1111')
+#
+# u = User.new
+#
+# u.login = 'kiwiworks'
+# u.password = 'kiw00!@#'
+# u.email = '11@1122.com'
+# u.username = '키위윅스'
+# u.nickname = '키위윅스'
+# u.phone_no = '1111'
+# p u.save
+# p u.errors
+#
+# s.users << u
+#
+
+
 client = OAuth2::Client.new('e07aa0da3969f26d96c968f7a696b6ca234ff7fa9ca5d79e604c053584eddff5',
                             '48da95f7990cb6239502c222f94883f6d75c4be8a32fbf3b9b73b4d75c81ffcd',
                             :site => 'https://api-sas.kminlove.com')
@@ -28,15 +101,18 @@ client = OAuth2::Client.new('e07aa0da3969f26d96c968f7a696b6ca234ff7fa9ca5d79e604
 
 token = client.password.get_token('humoney', 'humoney00!@#', params: {grant_type: 'password'})
 
-response = token.post('/api/v1/charges',
-                     params:{card_no: '9410852258709300',
-                             business_no: '6818100394',
-                             amt: 500000,
-                             seq_no: '2016111700010'
-                     } )
+p token
 
-
-p response.parsed
+#
+# response = token.post('/api/v1/charges',
+#                      params:{card_no: '9410852258709300',
+#                              business_no: '6818100394',
+#                              amt: 500000,
+#                              seq_no: '2016111700010'
+#                      } )
+#
+#
+# p response.parsed
 # begin
 #   client = OAuth2::Client.new('749c0bff0ed3615d3befc043311e24a16646f4e656ddd5eb6fb6106741f57a24', '2336bd69779e6d6dda16a99eed81f4f5e16b8560311fcc1dde52b03f753cd189', :site => 'http://localhost:3006')
 #
