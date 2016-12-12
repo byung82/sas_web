@@ -47,10 +47,10 @@ req_data = {
     'JobCode': 'W',
     'CompCode': '0006',
     'SecureCode': '0000',
-    'DestBankCode': '023',
-    'DestAccountNo': '35820117593',
-    'Amount': '100',
-    'Remark': '출금테스트'
+    'DestBankCode': '088',
+    'DestAccountNo': '100031098665',
+    'Amount': '1000',
+    'Remark': '가맹점정산'
 }.to_json.encode('EUC-KR', 'UTF-8')
 
 #
@@ -66,15 +66,15 @@ req_data = {
 # Remark: 적요
 # SecureCode: 업체코드, DestBankCode, DestAccountNo, Amount 등을 조합하여 산출한 보안번호 (임시 보안번호:"0000")
 
-# response = RestClient.post 'https://vbank.kminlove.com/banking.jsp',
-#                            {
-#                                'REQDATA': req_data
-#                            }
-# response = response.encode('UTF-8', 'EUC-KR')
-#
-# response = JSON.parse(response)
-#
-# p response
+response = RestClient.post 'https://vbank.kminlove.com/banking.jsp',
+                           {
+                               'REQDATA': req_data
+                           }
+response = response.encode('UTF-8', 'EUC-KR')
+
+response = JSON.parse(response)
+
+p response
 
 
 # s = Store.find_or_initialize_by(business_no: '1111')
@@ -94,14 +94,14 @@ req_data = {
 #
 
 
-client = OAuth2::Client.new('e07aa0da3969f26d96c968f7a696b6ca234ff7fa9ca5d79e604c053584eddff5',
-                            '48da95f7990cb6239502c222f94883f6d75c4be8a32fbf3b9b73b4d75c81ffcd',
-                            :site => 'https://api-sas.kminlove.com')
-
-
-token = client.password.get_token('humoney', 'humoney00!@#', params: {grant_type: 'password'})
-
-p token
+# client = OAuth2::Client.new('e07aa0da3969f26d96c968f7a696b6ca234ff7fa9ca5d79e604c053584eddff5',
+#                             '48da95f7990cb6239502c222f94883f6d75c4be8a32fbf3b9b73b4d75c81ffcd',
+#                             :site => 'https://api-sas.kminlove.com')
+#
+#
+# token = client.password.get_token('humoney', 'humoney00!@#', params: {grant_type: 'password'})
+#
+# p token
 
 #
 # response = token.post('/api/v1/charges',
