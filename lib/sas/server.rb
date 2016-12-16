@@ -18,7 +18,7 @@ module Sas
     end
 
     def process_message(data)
-      Rails.logger.debug "메세지 큐처리  :#{data[:approval]}"
+      Rails.logger.debug '메세지 큐처리'
 
       approval = data[:approval]
 
@@ -173,7 +173,7 @@ module Sas
       if header.tsk_dv_c == '1000'
         Rails.logger.info '승인'
 
-        Rails.logger.info "BUFFER : #{buffer}, #{buffer.length}"
+        # Rails.logger.info "BUFFER : #{buffer}, #{buffer.length}"
 
         item = Sas::Packet::Approval.read(buffer)
 
@@ -184,7 +184,7 @@ module Sas
         item = Sas::Packet::Approval.read(buffer)
         server.queue.push({client: self, approval: item})
       else
-        Rails.logger.info "패킷헤더 오류 : #{header}"
+        # Rails.logger.info "패킷헤더 오류 : #{header}"
         close_connection_after_writing
       end
 
