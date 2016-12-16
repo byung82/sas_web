@@ -328,6 +328,9 @@ WHERE a.CARD_NO = B.CARD_NO
 
 
         begin
+
+          p "SEND LIMIT: #{request.tid}, #{request.rsp_c}";
+
           result = RestClient.post 'http://218.150.78.224/sas.asp', {tid:  request.id, status: limit.rsp_c}
 
           p result
