@@ -37,44 +37,233 @@ req_data = {
 }.to_json.encode('EUC-KR', 'UTF-8')
 
 
-req_data = {
-    'JobCode': 'B',
-    'CompCode': '0006',
-    'SecureCode': '0000'
-}.to_json.encode('EUC-KR', 'UTF-8')
-
-req_data = {
-    'JobCode': 'W',
-    'CompCode': '0006',
-    'SecureCode': '0000',
-    'DestBankCode': '088',
-    'DestAccountNo': '100031098665',
-    'Amount': '1000',
-    'Remark': '가맹점정산'
-}.to_json.encode('EUC-KR', 'UTF-8')
-
+# req_data = {
+#     'JobCode': 'B',
+#     'CompCode': '0006',
+#     'SecureCode': '0000'
+# }.to_json.encode('EUC-KR', 'UTF-8')
 #
-# 변수 REQDATA의 변수값 예
-# {"JobCode":"W", "CompCode":"0000", "DestBankCode":"023", "DestAccountNo":"123456789012", "Amount":"1000", "Remark":"적요내용", "SecureCode":"0000"}
+# response = RestClient.post 'https://vbank.kminlove.com/banking.jsp',
+#                            {
+#                                'REQDATA': req_data
+#                            }
+# response = response.encode('UTF-8', 'EUC-KR')
 #
-# JobCode: 출금 업무코드 ("W")
-# CompCode:
-# 업체코드
-# DestBankCode: 출금 상대 은행 코드 (SC제일은행:"023")
-# DestAccountNo: 출금 상대 계좌번호
-# Amount: 출금액
-# Remark: 적요
-# SecureCode: 업체코드, DestBankCode, DestAccountNo, Amount 등을 조합하여 산출한 보안번호 (임시 보안번호:"0000")
+# response = JSON.parse(response)
+#
+# p response
 
-response = RestClient.post 'https://vbank.kminlove.com/banking.jsp',
-                           {
-                               'REQDATA': req_data
-                           }
-response = response.encode('UTF-8', 'EUC-KR')
+# req_data = {
+#     'JobCode': 'W',
+#     'CompCode': '0006',
+#     'SecureCode': '0000',
+#     'DestBankCode': '088',
+#     'DestAccountNo': '100031098665',
+#     'Amount': '1000',
+#     'Remark': '가맹점정산'
+# }.to_json.encode('EUC-KR', 'UTF-8')
+#
+# req_data = {
+#     'JobCode': 'W',
+#     'CompCode': '0006',
+#     'SecureCode': '0000',
+#     'DestBankCode': '011',
+#     'DestAccountNo': '3010121692181',
+#     'Amount': '9709',
+#     'Remark': '결제대행국민사랑'
+# }.to_json.encode('EUC-KR', 'UTF-8')
+#
+#
+# #
+# # 변수 REQDATA의 변수값 예
+# # {"JobCode":"W", "CompCode":"0000", "DestBankCode":"023", "DestAccountNo":"123456789012", "Amount":"1000", "Remark":"적요내용", "SecureCode":"0000"}
+# #
+# # JobCode: 출금 업무코드 ("W")
+# # CompCode:
+# # 업체코드
+# # DestBankCode: 출금 상대 은행 코드 (SC제일은행:"023")
+# # DestAccountNo: 출금 상대 계좌번호
+# # Amount: 출금액
+# # Remark: 적요
+# # SecureCode: 업체코드, DestBankCode, DestAccountNo, Amount 등을 조합하여 산출한 보안번호 (임시 보안번호:"0000")
+#
+# response = RestClient.post 'https://vbank.kminlove.com/banking.jsp',
+#                            {
+#                                'REQDATA': req_data
+#                            }
+# response = response.encode('UTF-8', 'EUC-KR')
+#
+# response = JSON.parse(response)
+#
+# p response
+#
 
-response = JSON.parse(response)
 
-p response
+# 004	645901-04-308957	58218
+# 003	696-011882-04-014	1103803
+# 003	281-055986-04-014	1264250
+# 088	110287370268	1878309
+# 045	9003224910867 	973050
+# 011	150100-56-042671	97030
+# 023	560-20-153555	829909
+# 011	3010121692181 	9709
+# 045	9002176520401 	22241
+# 003	11914733101019 	1934
+
+items = [
+    {
+        bank_cd: '004',
+        account_no: '645901-04-308957'.gsub(/-/, ''),
+        amt: 58218,
+        remark: '(주)국민사랑',
+    },
+    {
+        bank_cd: '003',
+        account_no: '696-011882-04-014'.gsub(/-/, ''),
+        amt: 1103803,
+        remark: '(주)국민사랑',
+    },
+    {
+        bank_cd: '003',
+        account_no: '281-055986-04-014'.gsub(/-/, ''),
+        amt: 1264250,
+        remark: '(주)국민사랑',
+    },
+    {
+        bank_cd: '088',
+        account_no: '110287370268'.gsub(/-/, ''),
+        amt: 1878309,
+        remark: '(주)국민사랑',
+    },
+    {
+        bank_cd: '045',
+        account_no: '9003224910867'.gsub(/-/, ''),
+        amt: 973050,
+        remark: '(주)국민사랑',
+    },
+    {
+        bank_cd: '011',
+        account_no: '150100-56-042671'.gsub(/-/, ''),
+        amt: 97030,
+        remark: '(주)국민사랑',
+    },
+    {
+        bank_cd: '023',
+        account_no: '560-20-153555'.gsub(/-/, ''),
+        amt: 829909,
+        remark: '(주)국민사랑',
+    },
+    {
+        bank_cd: '011',
+        account_no: '3010121692181'.gsub(/-/, ''),
+        amt: 9709,
+        remark: '(주)국민사랑',
+    },
+    {
+        bank_cd: '045',
+        account_no: '9002176520401'.gsub(/-/, ''),
+        amt: 22241,
+        remark: '(주)국민사랑',
+    },
+    {
+        bank_cd: '003',
+        account_no: '11914733101019'.gsub(/-/, ''),
+        amt: 1934,
+        remark: '(주)국민사랑',
+    },
+]
+
+items.each do |item|
+  req_data = {
+      'JobCode': 'B',
+      'CompCode': '0006',
+      'SecureCode': '0000'
+  }.to_json.encode('EUC-KR', 'UTF-8')
+
+  response = RestClient.post 'https://vbank.kminlove.com/banking.jsp',
+                             {
+                                 'REQDATA': req_data
+                             }
+  response = response.encode('UTF-8', 'EUC-KR')
+
+  response = JSON.parse(response)
+
+  p response
+
+  p item[:bank_cd]
+  p item[:account_no]
+  p item[:amt]
+  p item[:remark]
+
+  req_data = {
+      'JobCode': 'W',
+      'CompCode': '0006',
+      'SecureCode': '0000',
+      'DestBankCode': item[:bank_cd],
+      'DestAccountNo': item[:account_no],
+      'Amount': item[:amt].to_s,
+      'Remark': item[:remark]
+  }.to_json.encode('EUC-KR', 'UTF-8')
+
+  response = RestClient.post 'https://vbank.kminlove.com/banking.jsp',
+                             {
+                                 'REQDATA': req_data
+                             }
+  response = response.encode('UTF-8', 'EUC-KR')
+
+  response = JSON.parse(response)
+
+  p response
+
+
+  #
+  # req_data = {
+  #     'JobCode': 'W',
+  #     'CompCode': '0006',
+  #     'SecureCode': '0000',
+  #     'DestBankCode': '004',
+  #     'DestAccountNo': '80130101583722',
+  #     'Amount': '13538',
+  #     'Remark': '결제대행국민사랑'
+  # }.to_json.encode('EUC-KR', 'UTF-8')
+  #
+end
+
+# req_data = {
+#     'JobCode': 'W',
+#     'CompCode': '0006',
+#     'SecureCode': '0000',
+#     'DestBankCode': '004',
+#     'DestAccountNo': '80130101583722',
+#     'Amount': '13538',
+#     'Remark': '결제대행국민사랑'
+# }.to_json.encode('EUC-KR', 'UTF-8')
+#
+# response = RestClient.post 'https://vbank.kminlove.com/banking.jsp',
+#                            {
+#                                'REQDATA': req_data
+#                            }
+# response = response.encode('UTF-8', 'EUC-KR')
+#
+# response = JSON.parse(response)
+#
+# p response
+#
+# req_data = {
+#     'JobCode': 'B',
+#     'CompCode': '0006',
+#     'SecureCode': '0000'
+# }.to_json.encode('EUC-KR', 'UTF-8')
+#
+# response = RestClient.post 'https://vbank.kminlove.com/banking.jsp',
+#                            {
+#                                'REQDATA': req_data
+#                            }
+# response = response.encode('UTF-8', 'EUC-KR')
+#
+# response = JSON.parse(response)
+#
+# p response
 
 
 # s = Store.find_or_initialize_by(business_no: '1111')
