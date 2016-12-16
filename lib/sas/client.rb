@@ -326,6 +326,15 @@ WHERE a.CARD_NO = B.CARD_NO
           next
         end
 
+
+        begin
+          result = RestClient.post 'http://218.150.78.224/sas.asp', {tid:  request.id, status: limit.rsp_c}
+
+          p result
+        rescue => e
+          p "SEND ERROR: #{e}"
+        end
+
         request.send_yn = true
         request.limit_log_id = log.id
         request.error_yn = limit.rsp_c != '0000' && limit.rsp_c != '0001'
