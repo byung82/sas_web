@@ -33,7 +33,12 @@ module Api
             @item.type_cd = 'CT004'
             @item.limit_cd = 'CL001'
             @item.store = store
-            @item.deposit_yn = false
+            if current_user.login != 'humoney'
+              @item.deposit_yn = false
+            else
+              @item.deposit_yn = true
+            end
+
             @item.store_card = store_card
             @item.created = current_user
             @item.updated = current_user
