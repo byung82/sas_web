@@ -327,16 +327,23 @@ WHERE a.CARD_NO = B.CARD_NO
         end
 
 
-        # begin
-        #
-        #   p "SEND LIMIT: #{request.id}, #{limit.rsp_c}"
-        #
-        #   result = RestClient.post 'http://218.150.78.224/sas.asp', {tid:  request.id, status: limit.rsp_c}
-        #
-        #   p result
-        # rescue => e
-        #   p "SEND ERROR: #{e}"
-        # end
+        begin
+          p "SEND LIMIT: #{request.id}, #{limit.rsp_c}"
+
+          if request.limit_cd == 'CL001'
+            result = RestClient.post 'http://218.150.78.224/sas.asp', {tid:  request.id,
+                                                                       status: limit.rsp_c,
+                                                                       uid: request.store_card.user_seq,
+                                                                       amt: request.save_amt
+
+            }
+
+            p result
+          end
+
+        rescue => e
+          p "SEND ERROR: #{e}"
+        end
 
         request.send_yn = true
         request.limit_log_id = log.id
