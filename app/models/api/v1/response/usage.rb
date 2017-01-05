@@ -19,7 +19,7 @@ module Api
           items = StoreLimitDet.where(business_no: usage.business_no)
               .where(user_seq: usage.user_seq)#.page usage.page
 
-          items = items.page page
+          items = items.page usage.page
 
           usage = Usage.new
           usage.success = true
