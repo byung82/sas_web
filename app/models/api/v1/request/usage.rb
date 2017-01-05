@@ -11,7 +11,7 @@ module Api
 
         validates_presence_of :business_no, :user_seq
 
-        validate :check_business_no, :check_user_seq
+        validate :check_business_no
 
 
         def initialize(attributes = {})
