@@ -5,6 +5,7 @@ module Api
         include ActiveModel::Validations
         include ActiveModel::Conversion
         include ActionView::Helpers::NumberHelper
+        include ActiveModel::Serialization
         extend ActiveModel::Naming
 
         attr_accessor :success, :total_count, :items
