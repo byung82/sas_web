@@ -25,7 +25,7 @@ module Api
         end
 
         def check_card_no
-          store_card = StoreCard.find_by(user_seq: self.card_no, business_no: self.business_no)
+          store_card = StoreCard.find_by(user_seq: self.user_seq, business_no: self.business_no)
           errors.add(:user_seq, '사용자 등록이 되어 있지 않습니다') if !store_card.present?
         end
 

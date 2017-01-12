@@ -15,9 +15,11 @@ module Api
           end
         end
 
-        def self.search(usage, params)
+        def self.search(usage)
           items = StoreLimitDet.where(business_no: usage.business_no)
-              .where(user_seq: usage.user_seq)#.page usage.page
+              .where(user_seq: usage.user_seq)
+              .where(status_cd: %w(LS002 LS003))
+          #.page usage.page
 
           items = items.page usage.page
 
