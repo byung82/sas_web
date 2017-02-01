@@ -7,7 +7,7 @@ module Api
         include ActionView::Helpers::NumberHelper
         extend ActiveModel::Naming
 
-        attr_accessor :business_no, :user_seq, :page
+        attr_accessor :business_no, :user_seq, :page, :per_page
 
         validates_presence_of :business_no, :user_seq
 
@@ -37,6 +37,7 @@ module Api
           item.business_no = params[:business_no]
           item.user_seq = params[:user_seq]
           item.page = params[:page] || 1
+          item.per_page = params[:per_page] || 10
           item
         end
       end

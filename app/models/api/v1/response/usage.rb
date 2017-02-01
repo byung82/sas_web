@@ -23,7 +23,7 @@ module Api
               # .page(1)
           #.page usage.page
 
-          items = items.page(item.page)
+          items = items.page(item.page).per(item.per_page)
 
           usage = Usage.new
           usage.success = true
