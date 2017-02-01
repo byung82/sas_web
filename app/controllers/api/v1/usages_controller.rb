@@ -14,8 +14,8 @@ module Api
 
         render json: response, serializer: Api::V1::Www::Usages::Index::UsagesSerializer
 
-      rescue => e
-        process_exception(e)
+      # rescue => e
+      #   process_exception(e)
       end
     end
   end
