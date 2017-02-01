@@ -8,7 +8,7 @@ module Api
         include ActiveModel::Serialization
         extend ActiveModel::Naming
 
-        attr_accessor :success, :total_count, :items
+        attr_accessor :success, :total_count, :items, :page
 
         def initialize(attributes = {})
           attributes.each do |name, value|
@@ -16,18 +16,19 @@ module Api
           end
         end
 
-        def self.search(usage, page)
-          items = StoreLimitDet.where(business_no: usage.business_no)
-              .where(user_seq: usage.user_seq)
+        def self.search(item)
+          items = StoreLimitDet.where(business_no: item.business_no)
+              .where(user_seq: item.user_seq)
               .where(status_cd: %w(LS002 LS003))
               # .page(1)
           #.page usage.page
 
-          items = items.page(page)
+          items = items.page(item.page)
 
           usage = Usage.new
           usage.success = true
           usage.total_count = items.total_count
+          usage.page = item.page
           usage.items = items
 
           usage

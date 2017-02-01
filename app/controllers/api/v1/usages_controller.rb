@@ -10,7 +10,7 @@ module Api
 
         raise ActiveRecord::RecordInvalid, item if !item.valid?
 
-        response = Api::V1::Response::Usage.search(item, params[:page] || 1)
+        response = Api::V1::Response::Usage.search(item)
 
         render json: response, serializer: Api::V1::Www::Usages::Index::UsagesSerializer
 
