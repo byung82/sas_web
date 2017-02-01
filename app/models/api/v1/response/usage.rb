@@ -23,7 +23,7 @@ module Api
               # .page(1)
           #.page usage.page
 
-          # items = items.page usage.page
+          items = items.page usage.page
 
           usage = Usage.new
           usage.success = true
