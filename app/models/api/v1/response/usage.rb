@@ -8,7 +8,7 @@ module Api
         include ActiveModel::Serialization
         extend ActiveModel::Naming
 
-        attr_accessor :success, :total_count, :items, :page
+        attr_accessor :success, :total_count, :data, :page
 
         def initialize(attributes = {})
           attributes.each do |name, value|
@@ -29,7 +29,7 @@ module Api
           usage.success = true
           usage.total_count = items.total_count
           usage.page = item.page
-          usage.items = items
+          usage.data = items
 
           usage
         end
