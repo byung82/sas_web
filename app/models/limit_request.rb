@@ -9,7 +9,6 @@ class LimitRequest < ActiveRecord::Base
 
   belongs_to :store_card
 
-
   belongs_to :approval_log
 
   set_update_method do
@@ -26,9 +25,6 @@ class LimitRequest < ActiveRecord::Base
   def response
     Api::V1::Response::Charge.create(self)
   end
-
-
-
 
   def limit_log_id
     @limit_log_id

@@ -330,8 +330,20 @@ WHERE a.CARD_NO = B.CARD_NO
         begin
           p "SEND LIMIT: #{request.id}, #{limit.rsp_c}"
 
-          if request.limit_cd == 'CL001'
+          if request.limit_cd == 'CL001' && request.created.login == 'humoney'
             result = RestClient.post 'http://218.150.78.224/sas.asp', {tid:  request.id,
+                                                                       status: limit.rsp_c,
+                                                                       uid: request.store_card.user_seq,
+                                                                       amt: request.save_amt
+
+            }
+
+            p result
+          end
+
+
+          if request.limit_cd == 'CL001' && request.created.login == 'kiwiworks'
+            result = RestClient.post 'https://dev.checkcoin.co.kr/api/ext/kminlove/sas/charge', {tid:  request.id,
                                                                        status: limit.rsp_c,
                                                                        uid: request.store_card.user_seq,
                                                                        amt: request.save_amt
