@@ -104,15 +104,15 @@ AND B.DEPOSIT_YN = 'Y'
 
         sql = <<-SQL
 SELECT
-  B.BUSINESS_NO, B.CARD_NO, 
+  B.BUSINESS_NO, B.CARD_NO,
   DECODE(A.LIMIT_CD, 'CL001',  NVL(B.SYNC_AMT, 0) + NVL(A.SAVE_AMT,0), 'CL003', A.AMT) AMT
 FROM
 (
   SELECT
     CARD_NO, 0 AMT, SAVE_AMT, 'CL001' LIMIT_CD
-  FROM 
+  FROM
   (
-    SELECT 
+    SELECT
       CARD_NO, MAX(SAVE_AMT) SAVE_AMT
     FROM LIMIT_REQUESTS
     WHERE BUSINESS_NO = '#{business_no['business_no']}'
@@ -122,7 +122,7 @@ FROM
     GROUP BY CARD_NO
   )
   UNION ALL
-  SELECT 
+  SELECT
     CARD_NO, AMT, 0 SAVE_AMT, 'CL003' LIMIT_CD
   FROM LIMIT_REQUESTS
   WHERE BUSINESS_NO = '#{business_no['business_no']}'
@@ -330,6 +330,19 @@ WHERE a.CARD_NO = B.CARD_NO
         begin
           p "SEND LIMIT: #{request.id}, #{limit.rsp_c}"
 
+
+          # if request.store.callback.present?
+          #   result = RestClient.post 'http://218.150.78.224/sas.asp', {tid:  request.id,
+          #                                                              status: limit.rsp_c,
+          #                                                              uid: request.store_card.user_seq,
+          #                                                              amt: request.save_amt
+          #
+          #   }
+          #
+          #   p result
+          #
+          # end
+
           if request.limit_cd == 'CL001' && request.created.login == 'humoney'
             result = RestClient.post 'http://218.150.78.224/sas.asp', {tid:  request.id,
                                                                        status: limit.rsp_c,
@@ -340,13 +353,24 @@ WHERE a.CARD_NO = B.CARD_NO
 
             p result
           end
-
-
+          #
+          #
           if request.limit_cd == 'CL001' && request.created.login == 'kiwiworks'
             result = RestClient.post 'https://dev.checkcoin.co.kr/api/ext/kminlove/sas/charge', {tid:  request.id,
                                                                        status: limit.rsp_c,
                                                                        uid: request.store_card.user_seq,
                                                                        amt: request.save_amt
+
+            }
+
+            p result
+          end
+
+          if request.limit_cd == 'CL001' && request.created.login == 'checkcoin'
+            result = RestClient.post 'https://checkcoin.co.kr/api/ext/kminlove/sas/charge', {tid:  request.id,
+                                                                                                 status: limit.rsp_c,
+                                                                                                 uid: request.store_card.user_seq,
+                                                                                                 amt: request.save_amt
 
             }
 
