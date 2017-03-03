@@ -73,6 +73,8 @@ WHERE LIMIT_AMT - SYNC_AMT != 0
         limit.trs_t = now.strftime('%H%M%S')
         limit.rsp_c = '0000'
         limit.card_no = card_no
+        limit.acc_amt = '000000000000'
+        limit.card_amt = '000000000000'
 
         len = limit.to_binary_s.length
         limit.hdr_c = (len-4).to_s.rjust(4, '0')
@@ -198,7 +200,9 @@ WHERE LIMIT_AMT - SYNC_AMT != 0
           trs_t: limit.trs_t,
           rsp_c: limit.rsp_c,
           card_no: limit.card_no,
-          amt: limit.amt
+          amt: limit.amt,
+          acc_amt: limit.acc_amt,
+          card_amt: limit.card_amt
       )
 
       @queue.delete limit.card_no
@@ -232,5 +236,4 @@ WHERE LIMIT_AMT - SYNC_AMT != 0
       }
     end
   end
-
 end

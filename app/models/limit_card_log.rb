@@ -13,6 +13,8 @@ class LimitCardLog < ActiveRecord::Base
         i_pprn1: pprn1,
         i_card_no: card_no,
         i_amt: amt,
+        i_acc_amt: acc_amt,
+        i_card_amt: card_amt,
         i_pprn2: pprn2
     )[:o_id]
   end
