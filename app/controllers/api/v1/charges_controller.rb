@@ -4,6 +4,36 @@ module Api
 
       protect_from_forgery with: :null_session
 
+      def get_sync_amt(card_no)
+
+        begin
+          limit = Sas::Packet::LimitCard.new
+          limit.hdr_c = '0000'
+          limit.tsk_dv_c = '3000'
+          limit.etxt_snrc_sn = SecureRandom.random_number(9999999999).
+              to_s.rjust(10, '0')
+          limit.trs_dt = now.strftime('%Y%m%d')
+          limit.trs_t = now.strftime('%H%M%S')
+          limit.rsp_c = '0000'
+          limit.card_no = card_no
+          len = limit.to_binary_s.length
+
+          limit.hdr_c = (len - 4).to_s.rjust(4, '0')
+
+          sock = TCPSocket.open('sas-card', 19703, 2)
+
+          sock.puts limit.to_binary_s
+
+          buffer = sock.recv(len + 4)
+
+          limit = Sas::Packet::LimitCard.read(buffer)
+
+          limit.card_amt
+        rescue
+          nil
+        end
+      end
+      
       def create
 
         item = Api::V1::Request::Charge.new
@@ -66,34 +96,6 @@ module Api
       end
     end
 
-    def get_sync_amt(card_no)
 
-      begin
-        limit = Sas::Packet::LimitCard.new
-        limit.hdr_c = '0000'
-        limit.tsk_dv_c = '3000'
-        limit.etxt_snrc_sn = SecureRandom.random_number(9999999999).
-            to_s.rjust(10, '0')
-        limit.trs_dt = now.strftime('%Y%m%d')
-        limit.trs_t = now.strftime('%H%M%S')
-        limit.rsp_c = '0000'
-        limit.card_no = card_no
-        len = limit.to_binary_s.length
-
-        limit.hdr_c = (len - 4).to_s.rjust(4, '0')
-
-        sock = TCPSocket.open('sas-card', 19703, 2)
-
-        sock.puts limit.to_binary_s
-
-        buffer = sock.recv(len + 4)
-
-        limit = Sas::Packet::LimitCard.read(buffer)
-
-        limit.card_amt
-      rescue
-        nil
-      end
-    end
   end
 end
