@@ -32,13 +32,19 @@ module Api
 
           @item = LimitRequest.find_or_initialize_by(business_no: store_card.business_no,
                                                      seq_no: item.seq_no)
+
+          sync_amt = get_sync_amt(item.card_no)
+
+          sync_amt = (store_card.sync_amt||0) if sync_amt == nil
+
           if @item.new_record?
             @item.card_no = item.card_no
-            @item.amt = (store_card.sync_amt||0) + item.amt.to_i
+            @item.amt = sync_amt + item.amt.to_i
             @item.save_amt = item.amt.to_i
             @item.type_cd = 'CT004'
             @item.limit_cd = 'CL001'
             @item.store = store
+
             if current_user.login != 'humoney'
               @item.deposit_yn = false
             else
@@ -57,6 +63,36 @@ module Api
 
       rescue => e
         process_exception(e)
+      end
+    end
+
+    def get_sync_amt(card_no)
+
+      begin
+        limit = Sas::Packet::LimitCard.new
+        limit.hdr_c = '0000'
+        limit.tsk_dv_c = '3000'
+        limit.etxt_snrc_sn = SecureRandom.random_number(9999999999).
+            to_s.rjust(10, '0')
+        limit.trs_dt = now.strftime('%Y%m%d')
+        limit.trs_t = now.strftime('%H%M%S')
+        limit.rsp_c = '0000'
+        limit.card_no = card_no
+        len = limit.to_binary_s.length
+
+        limit.hdr_c = (len - 4).to_s.rjust(4, '0')
+
+        sock = TCPSocket.open('sas-card', 19703, 2)
+
+        sock.puts limit.to_binary_s
+
+        buffer = sock.recv(len + 4)
+
+        limit = Sas::Packet::LimitCard.read(buffer)
+
+        limit.card_amt
+      rescue
+        nil
       end
     end
   end
