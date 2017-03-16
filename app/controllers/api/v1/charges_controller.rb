@@ -32,7 +32,7 @@ module Api
 
           logger.debug "LIMIT: #{limit}"
 
-          limit.card_amt
+          limit.card_amt.to_i
         rescue => e
           logger.fatal "e: #{e}"
           nil
