@@ -6,8 +6,8 @@ module Api
 
       def get_sync_amt(card_no)
 
-        # begin
-          now = Time.local.now
+        begin
+          now = Time.now.localtime
 
           limit = Sas::Packet::LimitCard.new
           limit.hdr_c = '0000'
@@ -33,10 +33,10 @@ module Api
           logger.debug "LIMIT: #{limit}"
 
           limit.card_amt
-        # rescue => e
-        #   logger.fatal "e: #{e}"
-        #   nil
-        # end
+        rescue => e
+          logger.fatal "e: #{e}"
+          nil
+        end
       end
 
       def create
@@ -70,7 +70,8 @@ module Api
 
           sync_amt = get_sync_amt(item.card_no)
 
-          sync_amt = (store_card.sync_amt||0) if sync_amt == nil
+          raise StandardError, '카드 충전시 오류가 발생했습니다 잠시후에 진행 하시기 바랍니다' if sync_amt == nil
+          # sync_amt = (store_card.sync_amt||0)
 
           if @item.new_record?
             @item.card_no = item.card_no
