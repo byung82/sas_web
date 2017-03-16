@@ -97,8 +97,8 @@ module Api
 
         render json: @item.response
 
-      # rescue => e
-      #   process_exception(e)
+      rescue => e
+        process_exception(e)
       end
     end
 
