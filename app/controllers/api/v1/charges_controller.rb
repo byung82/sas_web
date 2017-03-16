@@ -29,11 +29,12 @@ module Api
           limit = Sas::Packet::LimitCard.read(buffer)
 
           limit.card_amt
-        rescue
+        rescue => e
+          logger.warn "e: #{e.message}"
           nil
         end
       end
-      
+
       def create
 
         item = Api::V1::Request::Charge.new
