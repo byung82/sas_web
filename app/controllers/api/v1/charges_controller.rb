@@ -34,7 +34,7 @@ module Api
 
           limit.card_amt
         rescue => e
-          logger.warn "e: #{e.message}"
+          logger.fatal "e: #{e}"
           nil
         end
       end
