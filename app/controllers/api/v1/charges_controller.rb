@@ -7,6 +7,8 @@ module Api
       def get_sync_amt(card_no)
 
         begin
+          now = Time.local.now
+
           limit = Sas::Packet::LimitCard.new
           limit.hdr_c = '0000'
           limit.tsk_dv_c = '3000'
