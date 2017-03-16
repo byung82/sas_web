@@ -20,13 +20,15 @@ module Api
 
           limit.hdr_c = (len - 4).to_s.rjust(4, '0')
 
-          sock = TCPSocket.open('sas-card', 19703, 2)
+          sock = TCPSocket.open('sas-card', 19703)
 
           sock.puts limit.to_binary_s
 
           buffer = sock.recv(len + 4)
 
           limit = Sas::Packet::LimitCard.read(buffer)
+
+          logger.debug "LIMIT: #{limit}"
 
           limit.card_amt
         rescue => e
