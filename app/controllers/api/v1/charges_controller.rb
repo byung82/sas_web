@@ -6,7 +6,7 @@ module Api
 
       def get_sync_amt(card_no)
 
-        begin
+        # begin
           now = Time.local.now
 
           limit = Sas::Packet::LimitCard.new
@@ -33,10 +33,10 @@ module Api
           logger.debug "LIMIT: #{limit}"
 
           limit.card_amt
-        rescue => e
-          logger.fatal "e: #{e}"
-          nil
-        end
+        # rescue => e
+        #   logger.fatal "e: #{e}"
+        #   nil
+        # end
       end
 
       def create
@@ -96,8 +96,8 @@ module Api
 
         render json: @item.response
 
-      rescue => e
-        process_exception(e)
+      # rescue => e
+      #   process_exception(e)
       end
     end
 
