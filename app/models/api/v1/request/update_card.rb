@@ -30,6 +30,7 @@ module Api
           if !store_card.present?
             errors.add(:card_no, '카드번호가 존재하지 않습니다')
             return
+
           end
 
           chk = store_card.user_seq == self.user_seq && store_card.card_no == self.card_no
