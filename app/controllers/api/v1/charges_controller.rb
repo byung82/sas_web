@@ -75,7 +75,7 @@ module Api
 
           if @item.new_record?
             @item.card_no = item.card_no
-            @item.amt = sync_amt + item.amt.to_i + store_card.limit_amt
+            @item.amt = sync_amt + item.amt.to_i
             @item.save_amt = item.amt.to_i
             @item.type_cd = 'CT004'
             @item.limit_cd = 'CL001'
