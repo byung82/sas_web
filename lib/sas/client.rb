@@ -344,7 +344,7 @@ WHERE a.CARD_NO = B.CARD_NO
           # end
 
           if request.limit_cd == 'CL001' && request.created.login == 'humoney'
-            result = RestClient.post 'http://218.150.78.224/sas.asp', {tid:  request.id,
+            result = RestClient.post 'http://211.189.89.66/sas.asp', {tid:  request.id,
                                                                        status: limit.rsp_c,
                                                                        uid: request.store_card.user_seq,
                                                                        amt: request.save_amt

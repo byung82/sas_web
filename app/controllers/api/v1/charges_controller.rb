@@ -55,6 +55,8 @@ module Api
           raise StandardError, "오후 8시부터 오후 9시는 정기점검 시간입니다\n 오후 9시 이후에 충전 요청을 해주시기 바랍니다"
         end
 
+        raise StandardError, '서버이전으로 인한 점검중입니다'
+
         #store = current_user.stores.find_by(business_no: item.business_no)
 
         store_card = StoreCard.find_by(card_no: item.card_no)
@@ -75,7 +77,12 @@ module Api
 
           if @item.new_record?
             @item.card_no = item.card_no
-            @item.amt = sync_amt + item.amt.to_i
+            if sync_amt + item.amt.to_i > 0
+              @item.amt = sync_amt + item.amt.to_i
+            else
+              @item.amt = 0
+            end
+
             @item.save_amt = item.amt.to_i
             @item.type_cd = 'CT004'
             @item.limit_cd = 'CL001'
