@@ -57,6 +57,29 @@ module Sas
         approval.tsk_dv_c = '2100'
       end
 
+      begin
+
+        card = StoreCard.find_by(card_no: approval.card_no.strip)
+
+        if card.present? && card.business_no == '2258700196'
+          url = 'https://checkcoin.co.kr/api/ext/kminlove/sas/usage'
+          result = RestClient.post url, {
+              card_no:  approval.card_no,
+              amt: approval.apr_am.to_i,
+              cancel_yn: approval.apr_can_yn,
+              approval_no: approval.apr_no,
+              approval_ymdhms: "#{approval.apr_dt}#{approval.apr_t}",
+              cancel_ymdhms: approval.apr_can_dtm,
+              store_name: approval.mrc_nm
+          }
+
+          p result
+        end
+
+      rescue => e
+        Rails.logger.fatal "전송오류 처리 : #{e}"
+      end
+
       approval.rsp_c = '0000'
       data[:client].send_data approval.to_binary_s
     rescue => e
