@@ -32,9 +32,12 @@ module Api
 
           logger.debug "LIMIT: #{limit}"
 
+          sock.close()
+
           limit.card_amt.to_i
         rescue => e
           logger.fatal "e: #{e}"
+          sock.close()
           nil
         end
       end
@@ -53,12 +56,6 @@ module Api
 
         if hour == 20
           raise StandardError, "오후 8시부터 오후 9시는 정기점검 시간입니다\n 오후 9시 이후에 충전 요청을 해주시기 바랍니다"
-        end
-
-        if current_user.login != 'lge'
-
-          raise StandardError, '긴급 점검중입니다 잠시후에 진행해주세요'
-
         end
 
         # raise StandardError, '서버이전으로 충전이 필요하실 경우 연락을 주시기 바랍니다'
@@ -80,6 +77,8 @@ module Api
 
           raise StandardError, '카드 충전시 오류가 발생했습니다 잠시후에 진행 하시기 바랍니다' if sync_amt == nil
           # sync_amt = (store_card.sync_amt||0)
+
+
 
           if @item.new_record?
             @item.card_no = item.card_no
