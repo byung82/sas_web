@@ -8,6 +8,8 @@ module Api
 
         raise ActiveRecord::RecordInvalid, item if !item.valid?
 
+        raise StandardError, '긴급 점검중입니다 잠시후에 진행해주세요'
+
         @item = StoreCard.find_by(card_no: item.card_no)
 
         render json: {
